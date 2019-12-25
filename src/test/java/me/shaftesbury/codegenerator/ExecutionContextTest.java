@@ -1,7 +1,6 @@
 package me.shaftesbury.codegenerator;
 
 import io.vavr.collection.List;
-import io.vavr.collection.Seq;
 import me.shaftesbury.codegenerator.imported.RuntimeCompiler;
 import me.shaftesbury.codegenerator.text.Class;
 import org.junit.jupiter.api.Test;
@@ -56,7 +55,7 @@ class ExecutionContextTest {
 
     @Test
     void toBuilder() {
-        final ExecutionContext executionContext = (ExecutionContext) ExecutionContext.builder().withContext(mock(Seq.class)).withCompiler(mock(RuntimeCompiler.class)).build();
+        final ExecutionContext executionContext = ExecutionContext.builder().withContext(List.of(mock(Class.class))).withCompiler(mock(RuntimeCompiler.class)).build();
 
         final IExecutionContext actual = executionContext.toBuilder().build();
 
