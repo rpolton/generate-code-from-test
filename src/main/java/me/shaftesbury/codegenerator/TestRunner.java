@@ -3,8 +3,6 @@ package me.shaftesbury.codegenerator;
 import io.vavr.control.Option;
 import me.shaftesbury.codegenerator.text.ITestMethod;
 
-import static io.vavr.control.Option.none;
-import static io.vavr.control.Option.some;
 import static java.util.Objects.requireNonNull;
 
 public class TestRunner implements ITestRunner {
@@ -39,15 +37,9 @@ public class TestRunner implements ITestRunner {
                     "exampleMethod", "exampleParameter");
         }
      */
-    public Option<Throwable> execute(final ITestMethod testMethod) {
+    public Option<Exception> execute(final ITestMethod testMethod) {
         final IExecutionContext executionContext = executionContextExtender.addTestMethod(this.executionContext, testMethod);
-        final Option<Boolean> result;
-        try {
-            result = methodInvocationUtils.invokeTestMethod(executionContext, testMethod.getClassName(), testMethod.getMethodName());
-        } catch (final Exception e) {
-            return some(e);
-        }
-        return none();
+        return methodInvocationUtils.invokeTestMethod(executionContext, testMethod.getClassName(), testMethod.getMethodName());
     }
 
     public static Builder builder() {

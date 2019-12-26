@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StepDefs {
 
     private ITestMethod testMethod;
-    private Option<Throwable> results;
+    private Option<Exception> results;
     private ICodeGenerator codeGenerator;
     private IExecutionContext executionContext;
 
@@ -73,15 +73,6 @@ public class StepDefs {
                 .withMethodInvocationUtils(new MethodInvocationUtilsProxy())
                 .build();
         results = testRunner.execute(testMethod);
-  /*      if(results.isDefined()) {
-            final Throwable throwable = results.get();
-            if(throwable instanceof ClassNotFoundException) {
-                final ClassNotFoundException classNotFoundException = (ClassNotFoundException) throwable;
-                final String className = classNotFoundException.getClassName();
-                final Class sourceClass = new Class(className, "public class " + className + " { }");
-                tryAgain(List.of(sourceClass));
-            }
-        }*/
     }
 
     @Then("the test should execute without errors")

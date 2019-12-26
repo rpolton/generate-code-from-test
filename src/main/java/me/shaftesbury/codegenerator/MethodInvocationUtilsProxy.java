@@ -8,14 +8,14 @@ import static io.vavr.control.Option.none;
 import static io.vavr.control.Option.some;
 
 public class MethodInvocationUtilsProxy {
-    public Option<Boolean> invokeTestMethod(final IExecutionContext executionContext, final String testClassName, final String testMethodName) throws IllegalAccessException {
+    public Option<Exception> invokeTestMethod(final IExecutionContext executionContext, final String testClassName, final String testMethodName) {
         final Class<?> testClass = executionContext.getRuntimeCompiler().getCompiledClass(testClassName);
-        return findFirstMatchingMethod(testClass, testMethodName).map(m -> {
+        return findFirstMatchingMethod(testClass, testMethodName).flatMap(m -> {
             try {
-                m.invoke(testClass);
-                return true;
+                final Object invoked = m.invoke(testClass);
+                return Option.none();
             } catch (final Exception e) {
-                return false;
+                return Option.some(e);
             }
         });
     }

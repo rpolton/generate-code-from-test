@@ -1,5 +1,7 @@
 package me.shaftesbury.codegenerator.imported;
 
+import me.shaftesbury.codegenerator.ClassNotFoundException;
+
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.FileObject;
@@ -17,6 +19,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Objects.isNull;
 
 /**
  * Utility class for compiling classes whose source code is given as
@@ -161,6 +165,7 @@ public class RuntimeCompiler {
         @Override
         public Class<?> findClass(String name) {
             byte[] b = classData.get(name);
+            if (isNull(b)) throw new ClassNotFoundException(name);
             return defineClass(name, b, 0, b.length);
         }
     }
