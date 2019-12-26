@@ -3,6 +3,7 @@ package me.shaftesbury.codegenerator;
 import io.vavr.collection.List;
 import me.shaftesbury.codegenerator.imported.RuntimeCompiler;
 import me.shaftesbury.codegenerator.text.Class;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,17 +19,19 @@ class ExecutionContextTest {
         assertThat(ExecutionContext.builder()).isNotNull().isInstanceOf(ExecutionContext.Builder.class);
     }
 
+    @Nested
+    class Preconditions {
+        @Test
+        void buildWithoutContextFails() {
+            assertThatNullPointerException().isThrownBy(() -> ExecutionContext.builder().withCompiler(mock(RuntimeCompiler.class)).build())
+                    .withMessage("context must not be null");
+        }
 
-    @Test
-    void buildWithoutContextFails() {
-        assertThatNullPointerException().isThrownBy(() -> ExecutionContext.builder().withCompiler(mock(RuntimeCompiler.class)).build())
-                .withMessage("context must not be null");
-    }
-
-    @Test
-    void buildWithoutCompilerFails() {
-        assertThatNullPointerException().isThrownBy(() -> ExecutionContext.builder().withContext(List.empty()).build())
-                .withMessage("runtimeCompiler must not be null");
+        @Test
+        void buildWithoutCompilerFails() {
+            assertThatNullPointerException().isThrownBy(() -> ExecutionContext.builder().withContext(List.empty()).build())
+                    .withMessage("runtimeCompiler must not be null");
+        }
     }
 
     @Test

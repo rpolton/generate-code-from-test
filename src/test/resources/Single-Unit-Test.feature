@@ -19,7 +19,7 @@ Feature: automatically generate code given unit tests that describe how the appl
   Scenario: run a test when the context does not contain the class code, so we have to generate it and add it to the context
     Given a unit test
     """
-    @Test
+    //@Test
     void test() {
         new A();
     }

@@ -59,7 +59,11 @@ public class StepDefs {
         // generate new code (if necessary) and execute the test
         codeGenerator = CodeGenerator.builder().withExecutionContext(executionContext).build();
         final Seq<Class> classes = //codeGenerator.generateCodeFor(testMethod);
-                List.of(new Class(testMethod.getClassName(), testMethod.getMethod()));
+                List.empty();
+        tryAgain(classes);
+    }
+
+    private void tryAgain(final Seq<Class> classes) {
         final IExecutionContext newExecutionContext = ((ExecutionContext) executionContext).toBuilder()
                 .withAdditionalClasses(classes)
                 .build();
@@ -69,6 +73,15 @@ public class StepDefs {
                 .withMethodInvocationUtils(new MethodInvocationUtilsProxy())
                 .build();
         results = testRunner.execute(testMethod);
+  /*      if(results.isDefined()) {
+            final Throwable throwable = results.get();
+            if(throwable instanceof ClassNotFoundException) {
+                final ClassNotFoundException classNotFoundException = (ClassNotFoundException) throwable;
+                final String className = classNotFoundException.getClassName();
+                final Class sourceClass = new Class(className, "public class " + className + " { }");
+                tryAgain(List.of(sourceClass));
+            }
+        }*/
     }
 
     @Then("the test should execute without errors")
@@ -77,7 +90,7 @@ public class StepDefs {
     }
 
     @Then("the application should generate code")
-    public void the_application_should_generate_code(String docString) {
+    public void the_application_should_generate_code(final String docString) {
         // Write code here that turns the phrase above into concrete actions
         throw new io.cucumber.java.PendingException();
     }

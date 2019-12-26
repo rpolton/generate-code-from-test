@@ -1,8 +1,6 @@
 package me.shaftesbury.codegenerator;
 
-import io.vavr.control.Either;
 import io.vavr.control.Option;
-import io.vavr.control.Try;
 import me.shaftesbury.codegenerator.text.ITestMethod;
 
 import static io.vavr.control.Option.none;
@@ -46,7 +44,7 @@ public class TestRunner implements ITestRunner {
         final Option<Boolean> result;
         try {
             result = methodInvocationUtils.invokeTestMethod(executionContext, testMethod.getClassName(), testMethod.getMethodName());
-        } catch (final IllegalAccessException e) {
+        } catch (final Exception e) {
             return some(e);
         }
         return none();
