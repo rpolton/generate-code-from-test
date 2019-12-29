@@ -32,6 +32,6 @@ public class TokeniserTest {
 
         final Seq<IToken> tokens = tokeniser.tokenise(testMethodBody);
 
-        assertThat(tokens.toJavaList()).containsExactly(TESTANNOTATION, VOIDRETURNTYPE, FunctionName.of("test"), STARTFUNCTION, NEW, ClassName.of("A"), NOPARAMS, SEMICOLON, ENDFUNCTION);
+        assertThat(tokens.toJavaList()).containsExactly(TESTANNOTATION, VOIDRETURNTYPE, FunctionName.of("test"), NOPARAMS, STARTFUNCTION, NEW, ClassName.of("A"), NOPARAMS, SEMICOLON, ENDFUNCTION);
     }
 }
