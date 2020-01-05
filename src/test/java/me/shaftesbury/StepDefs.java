@@ -6,6 +6,7 @@ import io.cucumber.java.en.When;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.control.Option;
+import me.shaftesbury.codegenerator.ClassNameFinder;
 import me.shaftesbury.codegenerator.CodeGenerator;
 import me.shaftesbury.codegenerator.ExecutionContext;
 import me.shaftesbury.codegenerator.ExecutionContextExtender;
@@ -19,6 +20,7 @@ import me.shaftesbury.codegenerator.text.Class;
 import me.shaftesbury.codegenerator.text.ITestMethod;
 import me.shaftesbury.codegenerator.text.LineOfCode;
 import me.shaftesbury.codegenerator.text.TestMethod;
+import me.shaftesbury.codegenerator.tokeniser.Tokeniser;
 
 import java.util.Arrays;
 
@@ -41,7 +43,7 @@ public class StepDefs {
     public void an_execution_context_containing(final String className, final String docString) {
         executionContext = ExecutionContext.builder()
                 .withCompiler(new RuntimeCompiler())
-                .withContext(List.of(new Class(className, docString)))
+                .withContext(List.of(new Class(className, List.of(docString), "")))
                 .build();
     }
 
@@ -57,7 +59,11 @@ public class StepDefs {
     public void i_run_the_test_in_the_supplied_context() {
         // the code generator should take the execution context of all the generated code thus far,
         // generate new code (if necessary) and execute the test
-        codeGenerator = CodeGenerator.builder().withExecutionContext(executionContext).build();
+        codeGenerator = CodeGenerator.builder()
+                .withExecutionContext(executionContext)
+                .withTokeniserBuilder(Tokeniser::new)
+                .withClassNameFinder(ClassNameFinder::new)
+                .build();
         final Seq<Class> classes = //codeGenerator.generateCodeFor(testMethod);
                 List.empty();
         tryAgain(classes);
@@ -73,6 +79,10 @@ public class StepDefs {
                 .withMethodInvocationUtils(new MethodInvocationUtilsProxy())
                 .build();
         results = testRunner.execute(testMethod);
+        if (results.isDefined()) {
+            final Seq<Class> classes1 = codeGenerator.generateCodeFor(testMethod);
+            tryAgain(classes1);
+        }
     }
 
     @Then("the test should execute without errors")

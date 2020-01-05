@@ -38,7 +38,7 @@ class ExecutionContextExtenderTest {
         assertThat(actual).isEqualTo(executionContext);
 
         verify(executionContext).toBuilder();
-        verify(builder).withAdditionalClasses(List.of(new Class("Test", "test")));
+        verify(builder).withAdditionalClasses(List.of(new Class("Test", List.of("test"), "")));
         verify(builder).build();
         verify(executionContext).getRuntimeCompiler();
         verify(runtimeCompiler).addClass("Test", "@Test void test() { new A(); }");

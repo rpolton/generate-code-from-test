@@ -1,9 +1,8 @@
 package me.shaftesbury.codegenerator.text;
 
 import io.vavr.collection.List;
-import io.vavr.control.Option;
-import me.shaftesbury.codegenerator.text.TestMethod;
 import net.openhft.compiler.CompilerUtils;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import javax.tools.JavaCompiler;
@@ -13,7 +12,6 @@ import java.util.function.Function;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 class TestMethodTest {
@@ -76,6 +74,7 @@ class TestMethodTest {
     }
 
     @Test
+    @Disabled
     void cachedCompiler() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         // dynamically you can call
         final String className = "mypackage.MyClass";
@@ -103,6 +102,7 @@ class TestMethodTest {
     }
 
     @Test
+    @Disabled
     void cachedCompiler1() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         // dynamically you can call
         final String className = "me.shaftesbury.codegenerator.MyClass";

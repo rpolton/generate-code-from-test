@@ -26,10 +26,6 @@ public class ExecutionContext implements IExecutionContext {
         return runtimeCompiler;
     }
 
-    public void addTestMethod(final String className, final String methodName) {
-
-    }
-
     @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
@@ -92,10 +88,12 @@ public class ExecutionContext implements IExecutionContext {
             requireNonNull(compiler, "runtimeCompiler must not be null");
             requireNonNull(context, "context must not be null");
             requireNonNull(additionalClasses, "additionalClasses must not be null");
-            context.forEach(cl -> compiler.addClass(cl.getName(), cl.getBody()));
-            additionalClasses.forEach(cl -> compiler.addClass(cl.getName(), cl.getBody()));
+
+            context.forEach(cl -> compiler.addClass(cl.getName(), String.join(" ", cl.getBody())));
+            additionalClasses.forEach(cl -> compiler.addClass(cl.getName(), String.join(" ", cl.getPublicFunctions())));
             if (!context.isEmpty())
                 compiler.compile();
+
             return new ExecutionContext(this);
         }
     }

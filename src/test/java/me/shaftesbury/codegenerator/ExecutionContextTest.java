@@ -42,8 +42,10 @@ class ExecutionContextTest {
         final List<Class> context = List.of(class1, class2);
 
         when(class1.getName()).thenReturn("class1");
+        when(class1.getPublicFunctions()).thenReturn(List.of("fn1"));
         when(class1.getBody()).thenReturn("body1");
         when(class2.getName()).thenReturn("class2");
+        when(class2.getPublicFunctions()).thenReturn(List.of("fn2"));
         when(class2.getBody()).thenReturn("body2");
 
         final ExecutionContext executionContext = ExecutionContext.builder().withContext(context).withCompiler(compiler).build();
@@ -58,7 +60,13 @@ class ExecutionContextTest {
 
     @Test
     void toBuilder() {
-        final ExecutionContext executionContext = ExecutionContext.builder().withContext(List.of(mock(Class.class))).withCompiler(mock(RuntimeCompiler.class)).build();
+        final Class aClass = mock(Class.class);
+        final ExecutionContext executionContext = ExecutionContext.builder()
+                .withContext(List.of(aClass))
+                .withCompiler(mock(RuntimeCompiler.class))
+                .build();
+
+        when(aClass.getPublicFunctions()).thenReturn(List.of("test"));
 
         final IExecutionContext actual = executionContext.toBuilder().build();
 

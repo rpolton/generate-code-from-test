@@ -10,7 +10,7 @@ public class ExecutionContextExtender implements IExecutionContextExtender {
         final String className = testMethod.getClassName();
         final String methodName = testMethod.getMethodName();
         final ExecutionContext executionContext = ((ExecutionContext) originalExecutionContext).toBuilder()
-                .withAdditionalClasses(List.of(new Class(className, methodName)))
+                .withAdditionalClasses(List.of(new Class(className, List.of(methodName), "")))
                 .build();
         final RuntimeCompiler runtimeCompiler = executionContext.getRuntimeCompiler();
         runtimeCompiler.addClass(className,testMethod.getMethod());

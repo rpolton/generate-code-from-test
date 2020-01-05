@@ -19,6 +19,10 @@ public class FunctionName implements IToken {
         return FUNCTIONNAME_AS_TOKEN;
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public String toString() {
         return "FunctionName{" +

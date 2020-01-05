@@ -19,6 +19,10 @@ public class ClassName implements IToken {
         return CLASSNAME_AS_TOKEN;
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public String toString() {
         return "ClassName{" +
