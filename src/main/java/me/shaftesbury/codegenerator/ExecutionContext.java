@@ -2,6 +2,7 @@ package me.shaftesbury.codegenerator;
 
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
+import io.vavr.collection.Traversable;
 import me.shaftesbury.codegenerator.imported.RuntimeCompiler;
 import me.shaftesbury.codegenerator.text.Class;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -66,7 +67,7 @@ public class ExecutionContext implements IExecutionContext {
 
     public static class Builder {
         private Seq<Class> context;
-        private Seq<Class> additionalClasses = List.empty();
+        private Traversable<Class> additionalClasses = List.empty();
         private RuntimeCompiler compiler;
 
         public Builder withContext(final Seq<Class> context) {
@@ -79,7 +80,7 @@ public class ExecutionContext implements IExecutionContext {
             return this;
         }
 
-        public Builder withAdditionalClasses(final Seq<Class> classes) {
+        public Builder withAdditionalClasses(final Traversable<Class> classes) {
             this.additionalClasses = classes;
             return this;
         }

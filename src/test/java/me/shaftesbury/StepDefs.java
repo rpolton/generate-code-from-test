@@ -5,6 +5,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
+import io.vavr.collection.Traversable;
 import io.vavr.control.Option;
 import me.shaftesbury.codegenerator.ClassNameFinder;
 import me.shaftesbury.codegenerator.CodeGenerator;
@@ -69,7 +70,7 @@ public class StepDefs {
         tryAgain(classes);
     }
 
-    private void tryAgain(final Seq<Class> classes) {
+    private void tryAgain(final Traversable<Class> classes) {
         final IExecutionContext newExecutionContext = ((ExecutionContext) executionContext).toBuilder()
                 .withAdditionalClasses(classes)
                 .build();
@@ -80,7 +81,7 @@ public class StepDefs {
                 .build();
         results = testRunner.execute(testMethod);
         if (results.isDefined()) {
-            final Seq<Class> classes1 = codeGenerator.generateCodeFor(testMethod);
+            final Traversable<Class> classes1 = codeGenerator.generateCodeFor(testMethod);
             tryAgain(classes1);
         }
     }

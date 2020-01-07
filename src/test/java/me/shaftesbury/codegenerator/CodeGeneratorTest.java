@@ -1,7 +1,7 @@
 package me.shaftesbury.codegenerator;
 
 import io.vavr.collection.List;
-import io.vavr.collection.Seq;
+import io.vavr.collection.Traversable;
 import me.shaftesbury.codegenerator.text.Class;
 import me.shaftesbury.codegenerator.text.ITestMethod;
 import me.shaftesbury.codegenerator.tokeniser.ClassName;
@@ -70,18 +70,19 @@ class CodeGeneratorTest {
         when(tokeniserBuilder.get()).thenReturn(tokeniser);
         when(tokeniser.tokenise(testFunction)).thenReturn(tokens);
         when(classNameFinderBuilder.get()).thenReturn(classNameFinder);
-        when(classNameFinder.findClassNamesPrecededByNew(tokens)).thenReturn(List.of("A"));
+        when(classNameFinder.findClassNamesPrecededByNew(tokens)).thenReturn(List.of("A()"));
         when(executionContext.getContext()).thenReturn(List.of(sourceCodeClass));
         when(testMethod.getMethod()).thenReturn(testFunction);
         when(sourceCodeClass.getName()).thenReturn("A");
         when(sourceCodeClass.getPublicFunctions()).thenReturn(List.of("A()"));
         when(sourceCodeClass.getBody()).thenReturn("A() {}");
 
-        final Seq<Class> code = codeGenerator.generateCodeFor(testMethod);
+        final Traversable<Class> code = codeGenerator.generateCodeFor(testMethod);
 
         verify(executionContext).getContext();
         verify(sourceCodeClass, atLeastOnce()).getName();
         verify(sourceCodeClass).getPublicFunctions();
+        verify(sourceCodeClass).getBody();
         verify(testMethod).getMethod();
         verify(tokeniserBuilder).get();
         verify(classNameFinderBuilder).get();
@@ -122,7 +123,7 @@ class CodeGeneratorTest {
         when(sourceCodeClass.getName()).thenReturn("A");
 //        when(sourceCodeClass.getBody()).thenReturn("");
 
-        final Seq<Class> code = codeGenerator.generateCodeFor(testMethod);
+        final Traversable<Class> code = codeGenerator.generateCodeFor(testMethod);
 
         verify(executionContext).getContext();
         verify(sourceCodeClass, atLeastOnce()).getName();
@@ -167,7 +168,7 @@ class CodeGeneratorTest {
         when(sourceCodeClass.getName()).thenReturn("");
         when(sourceCodeClass.getPublicFunctions()).thenReturn(List.empty());
 
-        final Seq<Class> code = codeGenerator.generateCodeFor(testMethod);
+        final Traversable<Class> code = codeGenerator.generateCodeFor(testMethod);
 
         verify(executionContext).getContext();
         verify(sourceCodeClass, atLeastOnce()).getName();

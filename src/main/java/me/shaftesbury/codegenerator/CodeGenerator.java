@@ -1,8 +1,11 @@
 package me.shaftesbury.codegenerator;
 
+import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
 import io.vavr.collection.Seq;
+import io.vavr.collection.Set;
+import io.vavr.collection.Traversable;
 import me.shaftesbury.codegenerator.text.Class;
 import me.shaftesbury.codegenerator.text.ITestMethod;
 import me.shaftesbury.codegenerator.tokeniser.ClassName;
@@ -42,7 +45,7 @@ public class CodeGenerator implements ICodeGenerator {
     }
 
     @Override
-    public Seq<Class> generateCodeFor(final ITestMethod testMethod) {
+    public Traversable<Class> generateCodeFor(final ITestMethod testMethod) {
         final ITokeniser tokeniser = tokeniserBuilder.get();
         final IClassNameFinder classNameFinder = this.classNameFinder.get();
 
@@ -66,9 +69,18 @@ public class CodeGenerator implements ICodeGenerator {
         if (classDefinitions.isEmpty()) {
             return generateCodeFor(classesUsedInTestMethod.head(), "constructor");
         } else {
-            functionNamesUsedInTestMethod.filter(fn -> functionNamesInSourceCodeClasses)
-            final Seq<String> functionDefinitions = functionNamesUsedInTestMethod.filter(classDefinitions::contains);
-            return functionDefinitions.isEmpty() ? definedClasses.flatMap(sc -> generateCodeFor(sc.getName(), functionNamesUsedInTestMethod.head())) : List.empty();
+            final Set<Class> generatedClasses = HashSet.empty();
+            for (final String fnUsedInTest : functionNamesUsedInTestMethod) {
+                for (final String className : classesUsedInTestMethod) {
+                    if (functionNamesInSourceCodeClasses.containsKey(className)) {
+                        final Seq<String> functionNames = functionNamesInSourceCodeClasses.get(className).get();
+                        if (!functionNames.contains(fnUsedInTest)) {
+                            generatedClasses.addAll(generateCodeFor(className, fnUsedInTest));
+                        }
+                    }
+                }
+            }
+            return generatedClasses;
         }
     }
 
