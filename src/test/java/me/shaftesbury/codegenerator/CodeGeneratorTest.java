@@ -82,7 +82,7 @@ class CodeGeneratorTest {
         verify(executionContext).getContext();
         verify(sourceCodeClass, atLeastOnce()).getName();
         verify(sourceCodeClass).getPublicFunctions();
-        verify(sourceCodeClass).getBody();
+//        verify(sourceCodeClass).getBody();
         verify(testMethod).getMethod();
         verify(tokeniserBuilder).get();
         verify(classNameFinderBuilder).get();
@@ -112,7 +112,7 @@ class CodeGeneratorTest {
         final List<IToken> tokens = List.of(Token.TESTANNOTATION, Token.VOIDRETURNTYPE,
                 FunctionName.of("test"), Token.STARTFUNCTION, Token.NEW, ClassName.of("A"), Token.NOPARAMS,
                 Token.SEMICOLON, Token.ENDFUNCTION);
-        final Class expectedClass = new Class("A", List.of("A() {}"), "");
+        final Class expectedClass = new Class("A", List.of("A"), "public A() {}");
 
         when(tokeniserBuilder.get()).thenReturn(tokeniser);
         when(tokeniser.tokenise(testFunction)).thenReturn(tokens);
@@ -129,7 +129,7 @@ class CodeGeneratorTest {
         verify(executionContext).getContext();
         verify(sourceCodeClass, atLeastOnce()).getName();
         verify(sourceCodeClass).getPublicFunctions();
-        verify(sourceCodeClass).getBody();
+//        verify(sourceCodeClass).getBody();
         verify(testMethod).getMethod();
         verify(tokeniserBuilder).get();
         verify(classNameFinderBuilder).get();
@@ -173,7 +173,7 @@ class CodeGeneratorTest {
         final Traversable<Class> code = codeGenerator.generateCodeFor(testMethod);
 
         verify(executionContext).getContext();
-//        verify(sourceCodeClass, atLeastOnce()).getName();
+        verify(sourceCodeClass, atLeastOnce()).getName();
 //        verify(sourceCodeClass).getPublicFunctions();
 //        verify(sourceCodeClass).getBody();
         verify(testMethod).getMethod();

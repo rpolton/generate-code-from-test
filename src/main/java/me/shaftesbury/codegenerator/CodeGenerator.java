@@ -63,30 +63,29 @@ public class CodeGenerator implements ICodeGenerator {
 
         final Seq<Class> existingSourceCodeClasses = executionContext.getContext();
         final Seq<Class> definedClasses = existingSourceCodeClasses.filter(cl -> classesUsedInTestMethod.contains(cl.getName()));
-        final List<String> classDefinitions = definedClasses.map(Class::getBody).toList();
+//        final List<String> classDefinitions = definedClasses.map(Class::getBody).toList();
         final Map<String, Seq<String>> functionNamesInSourceCodeClasses = definedClasses.groupBy(Class::getName)
                 .mapValues(cls -> cls.flatMap(Class::getPublicFunctions));
-        if (classDefinitions.isEmpty()) {
-            return generateCodeFor(classesUsedInTestMethod.head(), "constructor");
-        } else {
-            final Set<Class> generatedClasses = HashSet.empty();
-            for (final String fnUsedInTest : functionNamesUsedInTestMethod) {
-                for (final String className : classesUsedInTestMethod) {
-                    if (functionNamesInSourceCodeClasses.containsKey(className)) {
-                        final Seq<String> functionNames = functionNamesInSourceCodeClasses.get(className).get();
-                        if (!functionNames.contains(fnUsedInTest)) {
-                            generatedClasses.addAll(generateCodeFor(className, fnUsedInTest));
-                        }
+
+        Set<Class> generatedClasses = HashSet.empty();
+        for (final String fnUsedInTest : functionNamesUsedInTestMethod) {
+            for (final String className : classesUsedInTestMethod) {
+                if (functionNamesInSourceCodeClasses.containsKey(className)) {
+                    final Seq<String> functionNames = functionNamesInSourceCodeClasses.get(className).get();
+                    if (!functionNames.contains(fnUsedInTest)) {
+                        generatedClasses = generatedClasses.addAll(generateCodeFor(className, fnUsedInTest));
                     }
+                } else {
+                    generatedClasses = generatedClasses.addAll(generateCodeFor(className, fnUsedInTest));
                 }
             }
-            return generatedClasses;
         }
+        return generatedClasses;
     }
 
     private Seq<Class> generateCodeFor(final String className, final String methodName) {
-        return methodName.equals("constructor")
-                ? List.of(new Class(className, List.of(className + "() {}"), ""))
+        return methodName.equals(className)
+                ? List.of(new Class(className, List.of(className), "public " + className + "() {}"))
                 : List.of(new Class(className, List.of("void " + methodName + "() {}"), ""));
     }
 
