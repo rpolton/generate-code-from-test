@@ -10,6 +10,17 @@
         <java.version>1.8</java.version>
         <minimum.maven.version>3.3.1</minimum.maven.version>
 
+        <assertj-core.version>3.16.1</assertj-core.version>
+        <commons-lang3.version>3.10</commons-lang3.version>
+        <compiler.version>2.3.6</compiler.version>
+        <cucumber-junit.version>6.2.2</cucumber-junit.version>
+        <cucumber-java.version>6.2.2</cucumber-java.version>
+        <junit.version>4.13</junit.version>
+        <junit-jupiter.version>5.7.0-M1</junit-jupiter.version>
+        <mockito-core.version>3.4.0</mockito-core.version>
+        <vavr.version>1.0.0-alpha-3</vavr.version>
+
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-enforcer-plugin.version>1.2</maven-enforcer-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
     </properties>
@@ -23,52 +34,52 @@
         <dependency>
             <groupId>net.openhft</groupId>
             <artifactId>compiler</artifactId>
-            <version>2.3.4</version>
+            <version>${compiler.version}</version>
         </dependency>
         <dependency>
             <groupId>io.vavr</groupId>
             <artifactId>vavr</artifactId>
-            <version>LATEST</version>
+            <version>${vavr.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.9</version>
+            <version>${commons-lang3.version}</version>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>LATEST</version>
+            <version>${assertj-core.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>LATEST</version>
+            <version>${mockito-core.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>LATEST</version>
+            <version>${junit-jupiter.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-java</artifactId>
-            <version>LATEST</version>
+            <version>${cucumber-java.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-junit</artifactId>
-            <version>LATEST</version>
+            <version>${cucumber-junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -102,7 +113,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>LATEST</version>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
