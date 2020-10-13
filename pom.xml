@@ -8,7 +8,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>15</java.version>
         <minimum.maven.version>3.3.9</minimum.maven.version>
 
         <assertj-core.version>3.17.2</assertj-core.version>
