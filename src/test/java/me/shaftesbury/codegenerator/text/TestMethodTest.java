@@ -7,39 +7,31 @@ import org.junit.jupiter.api.Test;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
-import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class TestMethodTest {
     @Test
-    void constructorThrowsGivenNullLineBuilder() {
-        assertThat(assertThrows(NullPointerException.class, () -> new TestMethod(null, List.of("@Test"))))
-                .hasMessage("lineBuilder must not be null");
-    }
-
-    @Test
-    void constructorThrowsGivenNullLines() {
-        assertThat(assertThrows(NullPointerException.class, () -> new TestMethod(mock(Function.class), null)))
-                .hasMessage("lines must not be null");
-    }
-
-    @Test
-    void constructorThrowsGivenEmptyLines() {
-        assertThat(assertThrows(IllegalArgumentException.class, () -> new TestMethod(mock(Function.class), List.empty())))
-                .hasMessage("lines must not be empty");
-    }
-
-    @Test
     void getClassName() {
-        fail("not implemented yet");
+        assertThat(new TestMethod(List.of(mock(ILine.class))).getClassName()).isEqualTo("Test");
     }
+
     @Test
     void getMethodName() {
-        fail("not implemented yet");
+        assertThat(new TestMethod(List.of(mock(ILine.class))).getMethodName()).isEqualTo("test");
+    }
+
+    @Test
+    void getMethod() {
+        final ILine line1 = mock(ILine.class);
+        final ILine line2 = mock(ILine.class);
+        final ILine line3 = mock(ILine.class);
+        when(line1.toString()).thenReturn("void test() {");
+        when(line2.toString()).thenReturn("new A();");
+        when(line3.toString()).thenReturn("}");
+        assertThat(new TestMethod(List.of(line1, line2, line3)).getMethod()).isEqualTo("public class Test { void test() { new A(); } }");
     }
 
     /*

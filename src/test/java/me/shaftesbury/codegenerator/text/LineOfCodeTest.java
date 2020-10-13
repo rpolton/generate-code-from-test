@@ -3,14 +3,14 @@ package me.shaftesbury.codegenerator.text;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 @Disabled
 class LineOfCodeTest {
     @Test
     void constructorThrows() {
-        assertThat(assertThrows(NullPointerException.class, () -> new LineOfCode(null))).hasMessage("line must not be null");
+        assertThatNullPointerException().isThrownBy(() -> new LineOfCode(null))
+                .withMessage("line must not be null");
     }
 }
 

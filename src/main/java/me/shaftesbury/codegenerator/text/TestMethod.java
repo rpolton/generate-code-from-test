@@ -2,21 +2,15 @@ package me.shaftesbury.codegenerator.text;
 
 import io.vavr.collection.List;
 import io.vavr.control.Option;
+import me.shaftesbury.codegenerator.VisibleForTesting;
 
 import java.util.function.Function;
 
-import static java.util.Objects.requireNonNull;
-
 public class TestMethod implements ITestMethod {
-    private Function<String, ILine> lineBuilder;
-    private final List<String> lines;
+    private final List<ILine> lines;
 
-    public TestMethod(final Function<String, ILine> lineBuilder, final List<String> lines) {
-        requireNonNull(lineBuilder, "lineBuilder must not be null");
-        requireNonNull(lines, "lines must not be null");
-        if (lines.isEmpty()) throw new IllegalArgumentException("lines must not be empty");
-
-        this.lineBuilder = lineBuilder;
+    @VisibleForTesting
+    TestMethod(final List<ILine> lines) {
         this.lines = lines;
     }
 
@@ -28,8 +22,8 @@ public class TestMethod implements ITestMethod {
         return "test";
     }
 
-    public String getMethod() {
-        return "public class " + getClassName() + " { " + String.join("; ", lines) + " }";
+    public static TestMethod createTestMethod(final List<String> lines) {
+        return TestMethod.builder().withLines(lines).withLineBuilder(LineOfCode::new).build();
     }
 
     @Override
@@ -37,11 +31,40 @@ public class TestMethod implements ITestMethod {
         return Option.none();
     }
 
+    private static Builder builder() {
+        return new Builder();
+    }
+
+    public String getMethod() {
+        return "public class " + getClassName() + " { " +
+                lines.foldRight("", (l1, l2) -> l1.toString() + " " + l2.toString()) +
+                "}";
+    }
+
     @Override
     public String toString() {
         return "TestMethod{" +
-                "lineBuilder=" + lineBuilder +
-                ", lines=" + lines +
+                "lines=" + lines +
                 '}';
+    }
+
+    public static class Builder {
+
+        private List<String> lines;
+        private Function<String, ILine> map;
+
+        public Builder withLines(final List<String> lines) {
+            this.lines = lines;
+            return this;
+        }
+
+        public Builder withLineBuilder(final Function<String, ILine> map) {
+            this.map = map;
+            return this;
+        }
+
+        public TestMethod build() {
+            return new TestMethod(lines.map(map));
+        }
     }
 }

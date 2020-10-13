@@ -19,12 +19,11 @@ import me.shaftesbury.codegenerator.TestRunner;
 import me.shaftesbury.codegenerator.imported.RuntimeCompiler;
 import me.shaftesbury.codegenerator.text.Class;
 import me.shaftesbury.codegenerator.text.ITestMethod;
-import me.shaftesbury.codegenerator.text.LineOfCode;
-import me.shaftesbury.codegenerator.text.TestMethod;
 import me.shaftesbury.codegenerator.tokeniser.Tokeniser;
 
 import java.util.Arrays;
 
+import static me.shaftesbury.codegenerator.text.TestMethod.createTestMethod;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class StepDefs {
@@ -37,7 +36,7 @@ public class StepDefs {
     @Given("a unit test")
     public void a_unit_test(final String test) {
         final List<String> lines = List.ofAll(Arrays.asList(test.split(";" + System.lineSeparator())));
-        testMethod = new TestMethod(LineOfCode::new, lines);
+        testMethod = createTestMethod(lines);
     }
 
     @Given("an execution context containing class {word} and its definition")
