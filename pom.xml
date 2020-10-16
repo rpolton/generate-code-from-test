@@ -8,15 +8,13 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <java.version>15</java.version>
+        <java.version>11</java.version>
         <minimum.maven.version>3.3.9</minimum.maven.version>
 
         <assertj-core.version>3.17.2</assertj-core.version>
         <commons-lang3.version>3.11</commons-lang3.version>
         <compiler.version>2.3.6</compiler.version>
-        <cucumber-junit.version>6.8.1</cucumber-junit.version>
-        <cucumber-java.version>6.8.1</cucumber-java.version>
-        <junit.version>4.13.1</junit.version>
+        <cucumber.version>6.8.1</cucumber.version>
         <junit-jupiter.version>5.7.0</junit-jupiter.version>
         <mockito-core.version>3.5.13</mockito-core.version>
         <vavr.version>1.0.0-alpha-3</vavr.version>
@@ -24,6 +22,7 @@
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+        <junit.version>5.7.0</junit.version>
     </properties>
 
     <dependencies>
@@ -66,21 +65,21 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit-jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-java</artifactId>
-            <version>${cucumber-java.version}</version>
+            <artifactId>cucumber-java8</artifactId>
+            <version>${cucumber.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-junit</artifactId>
-            <version>${cucumber-junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
+            <version>${cucumber.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

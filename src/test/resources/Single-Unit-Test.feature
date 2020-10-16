@@ -13,7 +13,7 @@ Feature: automatically generate code given unit tests that describe how the appl
     """
     public class A { }
     """
-    When I run the test in the supplied context
+    When the test is run in the supplied context
     Then the test should execute without errors
 
   Scenario: run a test when the context does not contain the class code, so we have to generate it and add it to the context
