@@ -1,4 +1,5 @@
 package me.shaftesbury.codegenerator;
 
-public @interface VisibleForTesting {
+public enum Type {
+    INT
 }

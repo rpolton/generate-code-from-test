@@ -1,8 +1,13 @@
-package me.shaftesbury.codegenerator.text;
+package me.shaftesbury.codegenerator.model;
 
 import io.vavr.collection.List;
-import io.vavr.control.Option;
-import me.shaftesbury.codegenerator.VisibleForTesting;
+import me.shaftesbury.VisibleForTesting;
+import me.shaftesbury.codegenerator.IClassName;
+import me.shaftesbury.codegenerator.IExecutionContext;
+import me.shaftesbury.codegenerator.Result;
+import me.shaftesbury.codegenerator.text.ILine;
+import me.shaftesbury.codegenerator.text.LineOfCode;
+import me.shaftesbury.codegenerator.tokeniser.ClassName;
 
 import java.util.function.Function;
 
@@ -14,31 +19,24 @@ public class TestMethod implements ITestMethod {
         this.lines = lines;
     }
 
-    public String getClassName() {
-        return "Test";
+    public IClassName getClassName() {
+        return ClassName.of("Test");
     }
 
-    public String getMethodName() {
-        return "test";
+    public IMethodName getMethodName() {
+        return MethodName.of("test");
     }
 
-    public static TestMethod createTestMethod(final List<String> lines) {
-        return TestMethod.builder().withLines(lines).withLineBuilder(LineOfCode::new).build();
-    }
-
-    @Override
-    public Option<Exception> execute() {
-        return Option.none();
+    public Result execute(final IExecutionContext newContext) {
+        return null;
     }
 
     private static Builder builder() {
         return new Builder();
     }
 
-    public String getMethod() {
-        return "public class " + getClassName() + " { " +
-                lines.foldRight("", (l1, l2) -> l1.toString() + " " + l2.toString()) +
-                "}";
+    public IMethod getMethod() {
+        return Method.builder().withPublicClassName(getClassName()).withLines(lines);
     }
 
     @Override
@@ -46,6 +44,12 @@ public class TestMethod implements ITestMethod {
         return "TestMethod{" +
                 "lines=" + lines +
                 '}';
+    }
+
+    public static class TestMethodFactory {
+        public static TestMethod create(final List<String> lines) {
+            return TestMethod.builder().withLines(lines).withLineBuilder(LineOfCode::new).build();
+        }
     }
 
     public static class Builder {

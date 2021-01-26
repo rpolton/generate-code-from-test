@@ -1,7 +1,9 @@
 package me.shaftesbury.codegenerator.tokeniser;
 
-import io.vavr.collection.Seq;
+import io.vavr.collection.Traversable;
 
 public interface ITokeniser {
-    Seq<IToken> tokenise(String text);
+    Traversable<IToken> tokenise(IFunction text);
+
+    Traversable<IToken> tokenise(String text);
 }

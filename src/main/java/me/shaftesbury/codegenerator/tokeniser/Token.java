@@ -7,7 +7,22 @@ public enum Token implements IToken {
     VOIDRETURNTYPE("void"),
     STARTFUNCTION("{"),
     ENDFUNCTION("}"),
-    SEMICOLON(";");
+    SEMICOLON(";"),
+    FUNCTIONCALL("fn"),
+    DOT("."),
+    EMPTY(""),
+    THIS("this"),
+    ASSIGNMENT("="),
+    PUBLIC("public"),
+    CLASS("class"),
+    STARTCLASS("{"),
+    STARTFUNCTIONPARAMETERS("("),
+    INT("int"),
+    ENDFUNCTIONPARAMETERS("}"),
+    ENDCLASS("}"),
+    PRIVATE("private"),
+    FINAL("final"),
+    RETURN("return");
 
     private final String text;
 

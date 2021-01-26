@@ -1,33 +1,32 @@
-package me.shaftesbury.codegenerator.text;
+package me.shaftesbury.codegenerator.model;
 
 import io.vavr.collection.List;
-import net.openhft.compiler.CompilerUtils;
+import me.shaftesbury.codegenerator.text.ILine;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoSettings;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@MockitoSettings
 class TestMethodTest {
     @Test
-    void getClassName() {
-        assertThat(new TestMethod(List.of(mock(ILine.class))).getClassName()).isEqualTo("Test");
+    void getClassName(@Mock final ILine line) {
+        assertThat(new TestMethod(List.of(line)).getClassName()).isEqualTo("Test");
     }
 
     @Test
-    void getMethodName() {
-        assertThat(new TestMethod(List.of(mock(ILine.class))).getMethodName()).isEqualTo("test");
+    void getMethodName(@Mock final ILine line) {
+        assertThat(new TestMethod(List.of(line)).getMethodName()).isEqualTo("test");
     }
 
     @Test
-    void getMethod() {
-        final ILine line1 = mock(ILine.class);
-        final ILine line2 = mock(ILine.class);
-        final ILine line3 = mock(ILine.class);
+    void getMethod(@Mock final ILine line1, @Mock final ILine line2, @Mock final ILine line3) {
         when(line1.toString()).thenReturn("void test() {");
         when(line2.toString()).thenReturn("new A();");
         when(line3.toString()).thenReturn("}");
@@ -77,9 +76,9 @@ class TestMethodTest {
                 "        System.out.println(\"Hello World\");\n" +
                 "    }\n" +
                 "}\n";
-        final java.lang.Class aClass = CompilerUtils.CACHED_COMPILER.loadFromJava(className, javaCode);
-        final Runnable runner = (Runnable) aClass.newInstance();
-        runner.run();
+//        final java.lang.Class aClass = CompilerUtils.CACHED_COMPILER.loadFromJava(className, javaCode);
+//        final Runnable runner = (Runnable) aClass.newInstance();
+//        runner.run();
     }
 
     @Test
@@ -105,9 +104,9 @@ class TestMethodTest {
                         "        System.out.println(\"Hello World\");\n" +
                         "    }\n" +
                         "}\n";
-        final java.lang.Class aClass = CompilerUtils.CACHED_COMPILER.loadFromJava(className, javaCode);
-        final Runnable myClass = (Runnable) aClass.newInstance();
-        myClass.run();
+//        final java.lang.Class aClass = CompilerUtils.CACHED_COMPILER.loadFromJava(className, javaCode);
+//        final Runnable myClass = (Runnable) aClass.newInstance();
+//        myClass.run();
     }
 
 

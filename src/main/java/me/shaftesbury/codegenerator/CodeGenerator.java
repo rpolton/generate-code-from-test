@@ -1,29 +1,44 @@
 package me.shaftesbury.codegenerator;
 
-import io.vavr.collection.HashSet;
-import io.vavr.collection.List;
 import io.vavr.collection.Map;
-import io.vavr.collection.Seq;
-import io.vavr.collection.Set;
 import io.vavr.collection.Traversable;
-import me.shaftesbury.codegenerator.text.Class;
-import me.shaftesbury.codegenerator.text.ITestMethod;
-import me.shaftesbury.codegenerator.tokeniser.ClassName;
+import me.shaftesbury.codegenerator.model.IFunctionName;
+import me.shaftesbury.codegenerator.model.ILogicalClass;
+import me.shaftesbury.codegenerator.model.ITestMethod;
 import me.shaftesbury.codegenerator.tokeniser.IToken;
 import me.shaftesbury.codegenerator.tokeniser.ITokeniser;
+import me.shaftesbury.codegenerator.tokeniser.Tokeniser;
 
 import java.util.function.Supplier;
 
 public class CodeGenerator implements ICodeGenerator {
     private final IExecutionContext executionContext;
     private final Supplier<ITokeniser> tokeniserBuilder;
-    private final Supplier<IClassNameFinder> classNameFinder;
+    private final Supplier<IClassNameFinder> classNameFinderBuilder;
+    private final Supplier<IFunctionNameFinder> functionNameFinderBuilder;
 
     public CodeGenerator(final Builder builder) {
         executionContext = builder.executionContext;
         tokeniserBuilder = builder.tokeniserBuilder;
-        classNameFinder = builder.classNameFinder;
+        classNameFinderBuilder = builder.classNameFinder;
+        functionNameFinderBuilder = builder.functionNameFinder;
     }
+
+//    private Option<Exception> tryAgain(final Traversable<ILogicalClass> classes) {
+//        final IExecutionContext newExecutionContext = ExecutionContext.Builder.from(executionContext)
+//                .withAdditionalClasses(classes)
+//                .build();
+//        final ITestRunner testRunner = TestRunner.builder()
+//                .withExecutionContext(newExecutionContext)
+//                .withExecutionContextExtender(new ExecutionContextExtender())
+//                .withMethodInvocationUtils(new MethodInvocationUtilsProxy())
+//                .build();
+//        results = testRunner.execute(testMethod);
+//        if (results.isDefined()) {
+//            return tryAgain(codeGenerator.generateCode(testMethod));
+//        }
+//        return results;
+//    }
 
     public static Builder builder() {
         return new Builder();
@@ -40,58 +55,41 @@ public class CodeGenerator implements ICodeGenerator {
     }
 
     @Override
-    public Supplier<IClassNameFinder> getClassNameFinder() {
-        return classNameFinder;
+    public Supplier<IClassNameFinder> getClassNameFinderBuilder() {
+        return classNameFinderBuilder;
     }
 
     @Override
-    public Traversable<Class> generateCodeFor(final ITestMethod testMethod) {
+    public Traversable<ILogicalClass> generateCode(final ITestMethod testMethod) {
         final ITokeniser tokeniser = tokeniserBuilder.get();
-        final IClassNameFinder classNameFinder = this.classNameFinder.get();
+        final IClassNameFinder classNameFinder = classNameFinderBuilder.get();
+        final IFunctionNameFinder functionNameFinder = functionNameFinderBuilder.get();
 
-        final Seq<IToken> tokens = tokeniser.tokenise(testMethod.getMethod());
-        final Seq<String> classesUsedInTestMethod = tokens
-                .filter(token -> token instanceof ClassName)
-                .map(token -> ((ClassName) token).getName());
-        // somehow we need the class name as well as the function name
-        final Seq<String> functionNamesUsedInTestMethod =
-                classNameFinder.findClassNamesPrecededByNew(tokens)
-                       /* .appendAll(tokens
-                                .filter(token -> token instanceof FunctionName)
-                                .filter(token -> !token.equals(testMethod.getMethodName()))
-                                .map(token -> ((FunctionName) token).getName()))*/;
+        final Traversable<ILogicalClass> existingSourceCodeClasses = executionContext.getClasses();
+        final Traversable<IClassName> existingClassNames = existingSourceCodeClasses.map(ILogicalClass::getName);
 
-        final Seq<Class> existingSourceCodeClasses = executionContext.getContext();
-        final Seq<Class> definedClasses = existingSourceCodeClasses.filter(cl -> classesUsedInTestMethod.contains(cl.getName()));
-//        final List<String> classDefinitions = definedClasses.map(Class::getBody).toList();
-        final Map<String, Seq<String>> functionNamesInSourceCodeClasses = definedClasses.groupBy(Class::getName)
-                .mapValues(cls -> cls.flatMap(Class::getPublicFunctions));
+        final Traversable<IToken> tokens = tokeniser.tokenise(testMethod);
+        final Traversable<IClassName> classesUsedInTestMethod = classNameFinder.findConstructedClasses(tokens);
+        final Traversable<IClassName> classNamesUsedInTest = classesUsedInTestMethod.filterNot(existingClassNames::contains);
 
-        Set<Class> generatedClasses = HashSet.empty();
-        for (final String fnUsedInTest : functionNamesUsedInTestMethod) {
-            for (final String className : classesUsedInTestMethod) {
-                if (functionNamesInSourceCodeClasses.containsKey(className)) {
-                    final Seq<String> functionNames = functionNamesInSourceCodeClasses.get(className).get();
-                    if (!functionNames.contains(fnUsedInTest)) {
-                        generatedClasses = generatedClasses.addAll(generateCodeFor(className, fnUsedInTest));
-                    }
-                } else {
-                    generatedClasses = generatedClasses.addAll(generateCodeFor(className, fnUsedInTest));
-                }
-            }
-        }
-        return generatedClasses;
+        final Map<IClassName, Traversable<IFunctionName>> functionsUsedInTestByClass = functionNameFinder.findFunctionsUsedInTest(classNamesUsedInTest, tokens);
+        return functionsUsedInTestByClass
+                .filterNot(t -> executionContext.allFunctionsAreInTheContext(t._1, t._2))
+                .map(t -> generateCodeForClass(t._1, t._2));
     }
 
-    private Seq<Class> generateCodeFor(final String className, final String methodName) {
-        return methodName.equals(className)
-                ? List.of(new Class(className, List.of(className), "public " + className + "() {}"))
-                : List.of(new Class(className, List.of("void " + methodName + "() {}"), ""));
+    private ILogicalClass generateCodeForClass(final IClassName className, final Traversable<IFunctionName> functionNames) {
+        final LogicalClass.Builder builder = LogicalClass.builder()
+                .withName(className)
+                .withDefaultConstructor();
+        final LogicalClass.Builder builder1 = functionNames.foldRight(builder, (name, br) -> br.withMethod(LogicalFunction.builder().withName(name).build()));
+        return builder1.build();
     }
 
     public static class Builder {
         public Supplier<ITokeniser> tokeniserBuilder;
         public Supplier<IClassNameFinder> classNameFinder;
+        public Supplier<IFunctionNameFinder> functionNameFinder;
         private IExecutionContext executionContext;
 
         public Builder withExecutionContext(final IExecutionContext executionContext) {
@@ -99,8 +97,13 @@ public class CodeGenerator implements ICodeGenerator {
             return this;
         }
 
-        public Builder withClassNameFinder(final Supplier<IClassNameFinder> classNameFinder) {
+        public Builder withClassNameFinderBuilder(final Supplier<IClassNameFinder> classNameFinder) {
             this.classNameFinder = classNameFinder;
+            return this;
+        }
+
+        public Builder withFunctionNameFinderBuilder(final Supplier<IFunctionNameFinder> functionNameFinder) {
+            this.functionNameFinder = functionNameFinder;
             return this;
         }
 
@@ -111,6 +114,16 @@ public class CodeGenerator implements ICodeGenerator {
 
         public CodeGenerator build() {
             return new CodeGenerator(this);
+        }
+    }
+
+    public static class Factory {
+        public ICodeGenerator create(final IExecutionContext executionContext) {
+            return CodeGenerator.builder()
+                    .withExecutionContext(executionContext)
+                    .withTokeniserBuilder(Tokeniser::new)
+                    .withClassNameFinderBuilder(ClassNameFinder::new)
+                    .build();
         }
     }
 }

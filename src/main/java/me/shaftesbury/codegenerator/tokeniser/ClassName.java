@@ -1,10 +1,12 @@
 package me.shaftesbury.codegenerator.tokeniser;
 
+import me.shaftesbury.codegenerator.IClassName;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class ClassName implements IToken {
-    private static final ClassName CLASSNAME_AS_TOKEN = new ClassName("");
+public class ClassName implements IClassName {
+    //    private static final ClassName CLASSNAME_AS_TOKEN = new ClassName("");
     private final String name;
 
     private ClassName(final String name) {
@@ -15,9 +17,9 @@ public class ClassName implements IToken {
         return new ClassName(name);
     }
 
-    public static ClassName token() {
-        return CLASSNAME_AS_TOKEN;
-    }
+//    public static ClassName token() {
+//        return CLASSNAME_AS_TOKEN;
+//    }
 
     public String getName() {
         return name;
@@ -25,9 +27,9 @@ public class ClassName implements IToken {
 
     @Override
     public String toString() {
-        return "ClassName{" +
-                "name='" + name + '\'' +
-                '}';
+        return new ToStringBuilder(this)
+                .append("name", name)
+                .toString();
     }
 
     @Override
@@ -38,17 +40,11 @@ public class ClassName implements IToken {
 
         final ClassName className = (ClassName) o;
 
-        if (this == CLASSNAME_AS_TOKEN || className == CLASSNAME_AS_TOKEN)
-            return true;
-        return new EqualsBuilder()
-                .append(name, className.name)
-                .isEquals();
+        return new EqualsBuilder().append(name, className.name).isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(name)
-                .toHashCode();
+        return new HashCodeBuilder(17, 37).append(name).toHashCode();
     }
 }

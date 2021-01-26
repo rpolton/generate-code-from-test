@@ -1,7 +1,7 @@
 package me.shaftesbury.codegenerator;
 
 import io.vavr.control.Option;
-import me.shaftesbury.codegenerator.text.ITestMethod;
+import me.shaftesbury.codegenerator.model.ITestMethod;
 
 import static java.util.Objects.requireNonNull;
 

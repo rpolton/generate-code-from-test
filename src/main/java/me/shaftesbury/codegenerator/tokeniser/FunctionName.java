@@ -1,9 +1,10 @@
 package me.shaftesbury.codegenerator.tokeniser;
 
+import me.shaftesbury.codegenerator.model.IFunctionName;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class FunctionName implements IToken {
+public class FunctionName implements IFunctionName {
     private static final FunctionName FUNCTIONNAME_AS_TOKEN = new FunctionName("");
     private final String name;
 

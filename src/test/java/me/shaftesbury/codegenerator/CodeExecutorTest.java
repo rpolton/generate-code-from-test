@@ -1,0 +1,61 @@
+package me.shaftesbury.codegenerator;
+
+import me.shaftesbury.codegenerator.model.ITestMethod;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoSettings;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
+
+@MockitoSettings
+class CodeExecutorTest {
+    @Test
+    void validateConstructorParameter() {
+        assertThatNullPointerException()
+                .isThrownBy(() -> new CodeExecutor(null))
+                .withMessage("codeGeneratorFactory must not be null");
+    }
+
+    @Test
+    void executeTestMethodReturnsErrorResult(@Mock final ITestMethod testMethod, @Mock final IExecutionContext execContext, @Mock final CodeGenerator codeGenerator) {
+        final CodeExecutor codeExecutor = new CodeExecutor(ec -> codeGenerator);
+        final Result result = codeExecutor.execute(testMethod).inContext(execContext);
+        assertThat(result).extracting(Result::isError).isEqualTo(true);
+    }
+
+    @Test
+    void executeTestMethodReturnsNonErrorResult(@Mock final ITestMethod testMethod, @Mock final IExecutionContext execContext, @Mock final CodeGenerator codeGenerator) {
+        final CodeExecutor codeExecutor = new CodeExecutor(ec -> codeGenerator);
+        final Result result = codeExecutor.execute(testMethod).inContext(execContext);
+        assertThat(result).extracting(Result::isError).isEqualTo(false);
+    }
+
+    @Test
+    void executeTestMethodReturnsResultContainingValue(@Mock final ITestMethod testMethod, @Mock final IExecutionContext execContext, @Mock final CodeGenerator codeGenerator, @Mock final Object expectedValue) {
+        final CodeExecutor codeExecutor = new CodeExecutor(ec -> codeGenerator);
+        final Result result = codeExecutor.execute(testMethod).inContext(execContext);
+        assertThat(result).extracting(Result::getValue).isEqualTo(expectedValue);
+    }
+
+    @Test
+    void executeTestMethodReturnsResultWithCodeIdentifier(@Mock final ITestMethod testMethod, @Mock final IExecutionContext execContext, @Mock final CodeGenerator codeGenerator) {
+        final CodeExecutor codeExecutor = new CodeExecutor(ec -> codeGenerator);
+        final Result result = codeExecutor.execute(testMethod).inContext(execContext);
+        assertThat(result).extracting(Result::isCode).isEqualTo(true);
+    }
+
+    @Test
+    void executeTestMethodReturnsResultWithoutCodeIdentifier(@Mock final ITestMethod testMethod, @Mock final IExecutionContext execContext, @Mock final CodeGenerator codeGenerator) {
+        final CodeExecutor codeExecutor = new CodeExecutor(ec -> codeGenerator);
+        final Result result = codeExecutor.execute(testMethod).inContext(execContext);
+        assertThat(result).extracting(Result::isCode).isEqualTo(false);
+    }
+
+    @Test
+    void executeTestMethodReturnsResultContainingCode(@Mock final ITestMethod testMethod, @Mock final IExecutionContext execContext, @Mock final CodeGenerator codeGenerator, @Mock final Object code) {
+        final CodeExecutor codeExecutor = new CodeExecutor(ec -> codeGenerator);
+        final Result result = codeExecutor.execute(testMethod).inContext(execContext);
+        assertThat(result).extracting(Result::getCode).isEqualTo(code);
+    }
+}
