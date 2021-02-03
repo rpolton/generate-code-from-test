@@ -52,7 +52,7 @@ class LogicalClassTest {
         final IClassName className = mock(IClassName.class);
         final ILogicalFunction function = mock(ILogicalFunction.class);
         final Field field = mock(Field.class);
-        final ILogicalClass iLogicalClass = LogicalClass.builder().withFields(HashSet.of(field)).build();
+        final ILogicalClass iLogicalClass = LogicalClass.builder().withFields(Fields.builder().withField(field).build()).build();
         assertThat(iLogicalClass).extracting(ILogicalClass::getFields).isEqualTo(HashSet.of(field));
     }
 

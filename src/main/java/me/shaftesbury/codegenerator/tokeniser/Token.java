@@ -22,7 +22,9 @@ public enum Token implements IToken {
     ENDCLASS("}"),
     PRIVATE("private"),
     FINAL("final"),
-    RETURN("return");
+    RETURN("return"),
+    STARTFIELDS(""),
+    ENDFIELDS("");
 
     private final String text;
 

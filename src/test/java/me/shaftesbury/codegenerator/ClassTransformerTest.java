@@ -1,6 +1,5 @@
 package me.shaftesbury.codegenerator;
 
-import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
 import me.shaftesbury.codegenerator.model.Constructor;
 import me.shaftesbury.codegenerator.model.ILogicalClass;
@@ -40,7 +39,7 @@ class ClassTransformerTest {
                 Token.PUBLIC, FunctionName.of("A"), Token.STARTFUNCTIONPARAMETERS, Token.INT, Reference.of("a"), Token.ENDFUNCTIONPARAMETERS,
                 Token.STARTFUNCTION, Token.ENDFUNCTION, Token.ENDCLASS);
         final ILogicalClass expectedClass = LogicalClass.builder().withName(ClassName.of("A"))
-                .withConstructor(Constructor.builder().withParameter(Type.INT, "a").withBody(List.of(Token.EMPTY)).build())
+                .withConstructor(Constructor.builder().withParameter(Type.INT, "a").withBody(FunctionBody.builder().build()).build())
                 .build();
         final ILogicalClass logicalClass = new ClassTransformer().transform(tokens);
         assertThat(logicalClass).isEqualTo(expectedClass);
@@ -49,14 +48,19 @@ class ClassTransformerTest {
     @Test
     void transformSimpleClassWhichAssignsParametersToFields() {
         final ILogicalClass expectedClass = LogicalClass.builder().withName(ClassName.of("A"))
-                .withFields(HashSet.of(Field.withType(Type.INT).withName("a")))
-                .withConstructor(Constructor.builder().withParameter(Type.INT, "a").withBody(List.of(Token.THIS, Reference.of("a"), Token.ASSIGNMENT, Reference.of("a"))).build())
+                .withFields(Fields.builder().withField(Field.builder().withAccess(Access.PRIVATE_FINAL).withType(Type.INT).withName("a").build()).build())
+                .withConstructor(Constructor.builder()
+                        .withParameter(Type.INT, "a")
+                        .withBody(FunctionBody.builder()
+                                .withTokens(List.of(Token.THIS, Token.DOT, Reference.of("a"), Token.ASSIGNMENT, Reference.of("a"), Token.SEMICOLON))
+                                .build())
+                        .build())
                 .build();
         // "public class A { private final int a; public A(int a) {this.a=a;} }"
         final List<IToken> tokens = List.of(Token.PUBLIC, Token.CLASS, ClassName.of("A"), Token.STARTCLASS,
-                Token.PRIVATE, Token.FINAL, Token.INT, Reference.of("a"), Token.SEMICOLON,
+                Token.STARTFIELDS, Token.PRIVATE, Token.FINAL, Token.INT, Reference.of("a"), Token.SEMICOLON, Token.ENDFIELDS,
                 Token.PUBLIC, FunctionName.of("A"), Token.STARTFUNCTIONPARAMETERS, Token.INT, Reference.of("a"), Token.ENDFUNCTIONPARAMETERS,
-                Token.STARTFUNCTION, Token.THIS, Reference.of("a"), Token.ASSIGNMENT, Reference.of("a"), Token.SEMICOLON,
+                Token.STARTFUNCTION, Token.THIS, Token.DOT, Reference.of("a"), Token.ASSIGNMENT, Reference.of("a"), Token.SEMICOLON,
                 Token.ENDFUNCTION, Token.ENDCLASS);
         final ILogicalClass logicalClass = new ClassTransformer().transform(tokens);
         assertThat(logicalClass).isEqualTo(expectedClass);

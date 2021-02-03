@@ -4,4 +4,6 @@ public interface IField {
     Type getType();
 
     String getName();
+
+    Access getAccess();
 }

@@ -15,7 +15,7 @@ public class LogicalClass implements ILogicalClass {
     private final IClassName name;
     private final Set<IConstructor> constructors;
     private final Set<ILogicalFunction> functions;
-    private final Set<Field> fields;
+    private final Fields fields;
 
     private LogicalClass(final Builder builder) {
         name = builder.name;
@@ -48,7 +48,7 @@ public class LogicalClass implements ILogicalClass {
     }
 
     @Override
-    public Traversable<Field> getFields() {
+    public Fields getFields() {
         return fields;
     }
 
@@ -82,7 +82,7 @@ public class LogicalClass implements ILogicalClass {
         private IClassName name;
         private Set<IConstructor> constructors = HashSet.empty();
         private Set<ILogicalFunction> functions = HashSet.empty();
-        private Set<Field> fields = HashSet.empty();
+        private Fields fields = Fields.empty();
 
         public Builder withName(final IClassName className) {
             this.name = className;
@@ -99,7 +99,7 @@ public class LogicalClass implements ILogicalClass {
             return this;
         }
 
-        public Builder withFields(final Set<Field> fields) {
+        public Builder withFields(final Fields fields) {
             this.fields = fields;
             return this;
         }
