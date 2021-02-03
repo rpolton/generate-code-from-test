@@ -1,16 +1,26 @@
 package me.shaftesbury.codegenerator.tokeniser;
 
-import io.vavr.collection.Seq;
+import io.vavr.collection.List;
 import io.vavr.collection.Traversable;
+import me.shaftesbury.codegenerator.model.IMethod;
 import me.shaftesbury.codegenerator.model.ITestMethod;
 
 public class Tokeniser implements ITokeniser {
-    public Traversable<IToken> tokenise(final ITestMethod body) {
-//        return tokenise(body, List.empty());
+    @Override
+    public Traversable<IToken> tokenise(final String text) {
+        return tokenise(text, List.empty());
+    }
+
+    @Override
+    public Traversable<IToken> tokenise(final ITestMethod testMethod) {
+        return tokenise(testMethod.getMethod());
+    }
+
+    private Traversable<IToken> tokenise(final IMethod method) {
         return null;
     }
 
-    private Seq<IToken> tokenise(final String body, final Seq<IToken> tokens) {
+    private Traversable<IToken> tokenise(final String body, final List<IToken> tokens) {
         if (body.isEmpty())
             return tokens.reverse();
         if (body.startsWith("@Test")) {
@@ -27,7 +37,7 @@ public class Tokeniser implements ITokeniser {
         }
 
         if (!tokens.isEmpty() && tokens.head() instanceof FunctionName && body.startsWith("()")) {
-            return tokenise(body.replaceFirst("\\( *\\) *", ""), tokens.prepend(Token.NOPARAMS));
+            return tokenise(body.replaceFirst("\\( *\\) *", ""), tokens.prepend(Token.STARTFUNCTIONPARAMETERS).prepend(Token.ENDFUNCTIONPARAMETERS));
         }
 
         if (body.startsWith("{")) {
@@ -54,15 +64,5 @@ public class Tokeniser implements ITokeniser {
         }
 
         return tokens.reverse();
-    }
-
-    @Override
-    public Traversable<IToken> tokenise(final IFunction text) {
-        return null;
-    }
-
-    @Override
-    public Traversable<IToken> tokenise(final String text) {
-        return null;
     }
 }
