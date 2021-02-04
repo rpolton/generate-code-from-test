@@ -54,7 +54,7 @@ public class Tokeniser implements ITokeniser {
         }
 
         if (!tokens.isEmpty() && tokens.head() instanceof ClassName && body.startsWith("()")) {
-            return tokenise(body.replaceFirst("\\( *\\) *", ""), tokens.prepend(Token.NOPARAMS));
+            return tokenise(body.replaceFirst("\\( *\\) *", ""), tokens.prepend(Token.STARTFUNCTIONPARAMETERS).prepend(Token.ENDFUNCTIONPARAMETERS));
         }
         if (body.startsWith(";")) {
             return tokenise(body.replaceFirst("^; *", ""), tokens.prepend(Token.SEMICOLON));
