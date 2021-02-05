@@ -2,6 +2,7 @@ package me.shaftesbury.codegenerator.tokeniser;
 
 import io.vavr.collection.List;
 import io.vavr.collection.Traversable;
+import me.shaftesbury.codegenerator.Reference;
 import me.shaftesbury.codegenerator.model.IMethod;
 import me.shaftesbury.codegenerator.model.ITestMethod;
 
@@ -54,13 +55,31 @@ public class Tokeniser implements ITokeniser {
         }
 
         if (!tokens.isEmpty() && tokens.head() instanceof ClassName && body.startsWith("()")) {
-            return tokenise(body.replaceFirst("\\( *\\) *", ""), tokens.prepend(Token.STARTFUNCTIONPARAMETERS).prepend(Token.ENDFUNCTIONPARAMETERS));
+            return tokenise(body.replaceFirst("\\( *\\) +", ""), tokens.prepend(Token.STARTFUNCTIONPARAMETERS).prepend(Token.ENDFUNCTIONPARAMETERS));
         }
         if (body.startsWith(";")) {
             return tokenise(body.replaceFirst("^; *", ""), tokens.prepend(Token.SEMICOLON));
         }
         if (body.startsWith("}")) {
-            return tokenise(body.replaceFirst("^\\} *", ""), tokens.prepend(Token.ENDFUNCTION));
+            return tokenise(body.replaceFirst("^\\} +", ""), tokens.prepend(Token.ENDFUNCTION));
+        }
+        if (body.startsWith("final ")) {
+            return tokenise(body.replaceFirst("^final +", ""), tokens.prepend(Token.FINAL));
+        }
+        if (body.startsWith("int ")) {
+            return tokenise(body.replaceFirst("^int +", ""), tokens.prepend(Token.INT));
+        }
+        if (body.startsWith("= ")) {
+            return tokenise(body.replaceFirst("^= +", ""), tokens.prepend(Token.ASSIGNMENT));
+        }
+        if (body.matches("^[0-9]+(;| .*)")) {
+            final int endIndex = body.indexOf(" ");
+            final String value = body.substring(0, endIndex < 0 ? body.indexOf(";") : endIndex);
+            return tokenise(body.replaceFirst("^[0-9]+ *", ""), tokens.prepend(Value.of(Integer.parseInt(value))));
+        }
+        if (body.matches("^[a-zA-Z0-9_]+ .*")) {
+            final String refName = body.substring(0, body.indexOf(" "));
+            return tokenise(body.replaceFirst("^[a-zA-Z0-9_]+ ", ""), tokens.prepend(Reference.of(refName)));
         }
 
         return tokens.reverse();
