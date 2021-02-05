@@ -21,21 +21,21 @@ public class IntegrationTest {
     private final IClassNameFinder classNameFinder = new ClassNameFinder();
     private final Supplier<IClassNameFinder> classNameFinderBuilder = () -> classNameFinder;
     private final ITokeniser tokeniser = new Tokeniser();
-    private final Supplier<ITokeniser> tokeniserBuilder = () -> tokeniser;
+    private final Supplier<ITokeniser> tokeniserFactory = () -> tokeniser;
     private final IFunctionNameFinder functionNameFinder = new FunctionNameFinder();
-    private final Supplier<IFunctionNameFinder> functionNameFinderBuilder = () -> functionNameFinder;
+    private final Supplier<IFunctionNameFinder> functionNameFinderFactory = () -> functionNameFinder;
 
     private final CodeExecutor codeExecutor = new CodeExecutor(executionContext -> CodeGenerator.builder()
             .withExecutionContext(executionContext)
-            .withTokeniserBuilder(tokeniserBuilder)
+            .withTokeniserBuilder(tokeniserFactory)
             .withClassNameFinderBuilder(classNameFinderBuilder)
-            .withFunctionNameFinderBuilder(functionNameFinderBuilder)
+            .withFunctionNameFinderBuilder(functionNameFinderFactory)
             .build());
 
     @Test
     void runATestWhenTheContextContainsTheClassCode() {
         final String test =
-                "@Test" +
+                "@Test " +
                         "void test() { " +
                         "    new A(); " +
                         "}";

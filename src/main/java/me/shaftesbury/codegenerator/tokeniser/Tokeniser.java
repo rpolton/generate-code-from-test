@@ -3,7 +3,6 @@ package me.shaftesbury.codegenerator.tokeniser;
 import io.vavr.collection.List;
 import io.vavr.collection.Traversable;
 import me.shaftesbury.codegenerator.Reference;
-import me.shaftesbury.codegenerator.model.IMethod;
 import me.shaftesbury.codegenerator.model.ITestMethod;
 
 public class Tokeniser implements ITokeniser {
@@ -14,11 +13,7 @@ public class Tokeniser implements ITokeniser {
 
     @Override
     public Traversable<IToken> tokenise(final ITestMethod testMethod) {
-        return tokenise(testMethod.getMethod());
-    }
-
-    private Traversable<IToken> tokenise(final IMethod method) {
-        return null;
+        return tokenise(testMethod.getMethod().getBody(), List.empty());
     }
 
     private Traversable<IToken> tokenise(final String body, final List<IToken> tokens) {
@@ -61,7 +56,7 @@ public class Tokeniser implements ITokeniser {
             return tokenise(body.replaceFirst("^; *", ""), tokens.prepend(Token.SEMICOLON));
         }
         if (body.startsWith("}")) {
-            return tokenise(body.replaceFirst("^\\} +", ""), tokens.prepend(Token.ENDFUNCTION));
+            return tokenise(body.replaceFirst("^\\} *", ""), tokens.prepend(Token.ENDFUNCTION));
         }
         if (body.startsWith("final ")) {
             return tokenise(body.replaceFirst("^final +", ""), tokens.prepend(Token.FINAL));

@@ -12,7 +12,7 @@ public interface ICodeGenerator {
 
     Traversable<ILogicalClass> generateCode(final ITestMethod testMethod);
 
-    Supplier<ITokeniser> getTokeniserBuilder();
+    Supplier<ITokeniser> getTokeniserFactory();
 
-    Supplier<IClassNameFinder> getClassNameFinderBuilder();
+    Supplier<IClassNameFinder> getClassNameFinderFactory();
 }

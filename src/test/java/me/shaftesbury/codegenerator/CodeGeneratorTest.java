@@ -145,7 +145,7 @@ class CodeGeneratorTest {
             final CodeGenerator codeGenerator = CodeGenerator.builder().withExecutionContext(executionContext).withTokeniserBuilder(tokeniserBuilder).withClassNameFinderBuilder(classNameFinder).build();
 
             assertThat(codeGenerator)
-                    .extracting(CodeGenerator::getClassNameFinderBuilder, CodeGenerator::getExecutionContext, CodeGenerator::getTokeniserBuilder)
+                    .extracting(CodeGenerator::getClassNameFinderFactory, CodeGenerator::getExecutionContext, CodeGenerator::getTokeniserFactory)
                     .containsExactly(classNameFinder, executionContext, tokeniserBuilder);
         }
     }
@@ -162,8 +162,8 @@ class CodeGeneratorTest {
                     .build();
 
             assertThat(codeGenerator.getExecutionContext()).isEqualTo(context);
-            assertThat(codeGenerator.getTokeniserBuilder()).isSameAs(tokeniserBuilder);
-            assertThat(codeGenerator.getClassNameFinderBuilder()).isSameAs(classNameFinder);
+            assertThat(codeGenerator.getTokeniserFactory()).isSameAs(tokeniserBuilder);
+            assertThat(codeGenerator.getClassNameFinderFactory()).isSameAs(classNameFinder);
         }
     }
 }

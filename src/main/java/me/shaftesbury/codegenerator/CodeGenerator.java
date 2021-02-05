@@ -13,14 +13,14 @@ import java.util.function.Supplier;
 
 public class CodeGenerator implements ICodeGenerator {
     private final IExecutionContext executionContext;
-    private final Supplier<ITokeniser> tokeniserBuilder;
-    private final Supplier<IClassNameFinder> classNameFinderBuilder;
+    private final Supplier<ITokeniser> tokeniserFactory;
+    private final Supplier<IClassNameFinder> classNameFinderFactory;
     private final Supplier<IFunctionNameFinder> functionNameFinderBuilder;
 
     public CodeGenerator(final Builder builder) {
         executionContext = builder.executionContext;
-        tokeniserBuilder = builder.tokeniserBuilder;
-        classNameFinderBuilder = builder.classNameFinder;
+        tokeniserFactory = builder.tokeniserBuilder;
+        classNameFinderFactory = builder.classNameFinder;
         functionNameFinderBuilder = builder.functionNameFinder;
     }
 
@@ -50,19 +50,19 @@ public class CodeGenerator implements ICodeGenerator {
     }
 
     @Override
-    public Supplier<ITokeniser> getTokeniserBuilder() {
-        return tokeniserBuilder;
+    public Supplier<ITokeniser> getTokeniserFactory() {
+        return tokeniserFactory;
     }
 
     @Override
-    public Supplier<IClassNameFinder> getClassNameFinderBuilder() {
-        return classNameFinderBuilder;
+    public Supplier<IClassNameFinder> getClassNameFinderFactory() {
+        return classNameFinderFactory;
     }
 
     @Override
     public Traversable<ILogicalClass> generateCode(final ITestMethod testMethod) {
-        final ITokeniser tokeniser = tokeniserBuilder.get();
-        final IClassNameFinder classNameFinder = classNameFinderBuilder.get();
+        final ITokeniser tokeniser = tokeniserFactory.get();
+        final IClassNameFinder classNameFinder = classNameFinderFactory.get();
         final IFunctionNameFinder functionNameFinder = functionNameFinderBuilder.get();
 
         final Traversable<ILogicalClass> existingSourceCodeClasses = executionContext.getClasses();

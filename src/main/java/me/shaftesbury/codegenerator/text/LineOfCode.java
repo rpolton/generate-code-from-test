@@ -1,7 +1,14 @@
 package me.shaftesbury.codegenerator.text;
 
 public class LineOfCode implements ILine {
-    public LineOfCode(final String line) {
+    private final String line;
 
+    public LineOfCode(final String line) {
+        this.line = line;
+    }
+
+    @Override
+    public String getString() {
+        return line;
     }
 }

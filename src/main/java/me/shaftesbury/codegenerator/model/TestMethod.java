@@ -36,7 +36,7 @@ public class TestMethod implements ITestMethod {
     }
 
     public IMethod getMethod() {
-        return Method.builder().withPublicClassName(getClassName()).withLines(lines);
+        return Method.builder().withPublicClassName(getClassName()).withLines(lines).build();
     }
 
     @Override
