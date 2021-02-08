@@ -1,9 +1,12 @@
 package me.shaftesbury.codegenerator.tokeniser;
 
+import io.vavr.Tuple2;
 import io.vavr.collection.List;
 import io.vavr.collection.Traversable;
 import me.shaftesbury.codegenerator.Reference;
 import me.shaftesbury.codegenerator.model.ITestMethod;
+
+import static me.shaftesbury.codegenerator.tokeniser.Token.CLASS;
 
 public class Tokeniser implements ITokeniser {
     @Override
@@ -19,6 +22,14 @@ public class Tokeniser implements ITokeniser {
     private Traversable<IToken> tokenise(final String body, final List<IToken> tokens) {
         if (body.isEmpty())
             return tokens.reverse();
+
+        if (body.startsWith("public ")) {
+            return tokenise(body.replaceFirst("public +", ""), tokens);
+        }
+        if (body.startsWith("class ")) {
+            final Tuple2<String, List<IToken>> tuple2 = tokeniseClass(body.replaceFirst("class +", ""), tokens.prepend(CLASS));
+            return tokenise(tuple2._1, tokens.prependAll(tuple2._2));
+        }
         if (body.startsWith("@Test")) {
             return tokenise(body.replaceFirst("@Test[" + System.lineSeparator() + " ]+", ""), tokens.prepend(Token.TESTANNOTATION));
         }
@@ -78,5 +89,20 @@ public class Tokeniser implements ITokeniser {
         }
 
         return tokens.reverse();
+    }
+
+    private Tuple2<String, List<IToken>> tokeniseClass(final String body, final List<IToken> tokens) {
+        if (body.matches("^[a-zA-Z0-9_]+ .*")) {
+            final String refName = body.substring(0, body.indexOf(" "));
+            return tokeniseClass(body.replaceFirst("^[a-zA-Z0-9_]+ ", ""), tokens.prepend(ClassName.of(refName)));
+        }
+        if (body.startsWith("{")) {
+            return tokeniseClass(body.replaceFirst("^\\{ *", ""), tokens.prepend(Token.STARTCLASS));
+        }
+        if (body.startsWith("}")) {
+            return tokeniseClass(body.replaceFirst("^\\} *", ""), tokens.prepend(Token.ENDCLASS));
+        }
+
+        return new Tuple2<>(body, tokens);
     }
 }

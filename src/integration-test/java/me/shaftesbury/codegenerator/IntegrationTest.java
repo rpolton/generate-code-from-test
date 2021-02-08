@@ -1,10 +1,14 @@
 package me.shaftesbury.codegenerator;
 
 import io.vavr.collection.List;
+import io.vavr.collection.Traversable;
+import me.shaftesbury.codegenerator.model.ILogicalClass;
 import me.shaftesbury.codegenerator.model.ITestMethod;
 import me.shaftesbury.codegenerator.model.TestMethod;
+import me.shaftesbury.codegenerator.tokeniser.IToken;
 import me.shaftesbury.codegenerator.tokeniser.ITokeniser;
 import me.shaftesbury.codegenerator.tokeniser.Tokeniser;
+import me.shaftesbury.utils.functional.Using;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -60,10 +64,11 @@ public class IntegrationTest {
     }
 
     private IExecutionContext givenAnExecutionContextContainingTheClassDefinition(final String docString) {
-        return using(docString)
-                .map(tokeniser::tokenise)
-                .map(classTransformer::transform)
-                .in(executionContextFactory::create);
+        final Using<String> using = using(docString);
+        final Using<Traversable<IToken>> tokens = using.map(tokeniser::tokenise);
+        final Using<ILogicalClass> cls = tokens.map(classTransformer::transform);
+        final IExecutionContext ctx = cls.in(executionContextFactory::create);
+        return ctx;
     }
 
     private TestMethod givenAUnitTest(final String test) {
