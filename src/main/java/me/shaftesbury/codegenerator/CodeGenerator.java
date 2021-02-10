@@ -70,9 +70,9 @@ public class CodeGenerator implements ICodeGenerator {
 
         final Traversable<IToken> tokens = tokeniser.tokenise(testMethod);
         final Traversable<IClassName> classesUsedInTestMethod = classNameFinder.findConstructedClasses(tokens);
-        final Traversable<IClassName> classNamesUsedInTest = classesUsedInTestMethod.filterNot(existingClassNames::contains);
+        final Traversable<IClassName> classNamesUsedInTestNotAlreadyInContext = classesUsedInTestMethod.filterNot(existingClassNames::contains);
 
-        final Map<IClassName, Traversable<IFunctionName>> functionsUsedInTestByClass = functionNameFinder.findFunctionsUsedInTest(classNamesUsedInTest, tokens);
+        final Map<IClassName, ? extends Traversable<IFunctionName>> functionsUsedInTestByClass = functionNameFinder.findFunctionsUsedInTest(classNamesUsedInTestNotAlreadyInContext, tokens);
         return functionsUsedInTestByClass
                 .filterNot(t -> executionContext.allFunctionsAreInTheContext(t._1, t._2))
                 .map(t -> generateCodeForClass(t._1, t._2));

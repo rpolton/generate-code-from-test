@@ -6,5 +6,5 @@ import me.shaftesbury.codegenerator.model.IFunctionName;
 import me.shaftesbury.codegenerator.tokeniser.IToken;
 
 public interface IFunctionNameFinder {
-    Map<IClassName, Traversable<IFunctionName>> findFunctionsUsedInTest(Traversable<IClassName> classNamesUsedInTest, Traversable<IToken> tokens);
+    Map<IClassName, ? extends Traversable<IFunctionName>> findFunctionsUsedInTest(Traversable<IClassName> classNamesUsedInTest, Traversable<IToken> tokens);
 }
