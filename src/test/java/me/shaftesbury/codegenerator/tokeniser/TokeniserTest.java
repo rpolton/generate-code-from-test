@@ -44,17 +44,6 @@ public class TokeniserTest {
     }
 
     @Test
-    void testFunction() {
-        final String testMethodBody = "@Test void test() { }";
-
-        final ITokeniser tokeniser = new Tokeniser();
-
-        final Traversable<IToken> tokens = tokeniser.tokenise(testMethodBody);
-
-        assertThat(tokens.toJavaList()).containsExactly(TESTANNOTATION, VOIDRETURNTYPE, FunctionName.of("test"), STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, STARTFUNCTION, ENDFUNCTION);
-    }
-
-    @Test
     void assignmentFunction() {
         final String testMethodBody = "final int a = 10;";
 
@@ -63,5 +52,13 @@ public class TokeniserTest {
         final Traversable<IToken> tokens = tokeniser.tokenise(testMethodBody);
 
         assertThat(tokens.toJavaList()).containsExactly(FINAL, INT, Reference.of("a"), ASSIGNMENT, Value.of(10), SEMICOLON);
+    }
+
+    @Test
+    void testFunction() {
+        final String testMethod = "@Test void test() {     new A(); }";
+        final Tokeniser tokeniser = new Tokeniser();
+        final Traversable<IToken> tokens = tokeniser.tokenise(testMethod);
+        assertThat(tokens.toJavaList()).containsExactly(TESTANNOTATION, VOIDRETURNTYPE, FunctionName.of("test"), STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, STARTFUNCTION, NEW, ClassName.of("A"), STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, SEMICOLON, ENDFUNCTION);
     }
 }

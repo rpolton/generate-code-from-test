@@ -40,7 +40,7 @@ public class Tokeniser implements ITokeniser {
 
         if (!tokens.isEmpty() && tokens.head().equals(Token.VOIDRETURNTYPE)) {
             final String functionName = body.substring(0, body.indexOf("("));
-            return tokenise(body.replaceFirst("^[a-zA-Z0-9_]+ *", ""), tokens.prepend(FunctionName.of(functionName)));
+            return tokenise(body.replaceFirst("^[^(]+ *", ""), tokens.prepend(FunctionName.of(functionName)));
         }
 
         if (!tokens.isEmpty() && tokens.head() instanceof FunctionName && body.startsWith("()")) {
@@ -48,7 +48,8 @@ public class Tokeniser implements ITokeniser {
         }
 
         if (body.startsWith("{")) {
-            return tokenise(body.replaceFirst("^\\{ *", ""), tokens.prepend(Token.STARTFUNCTION));
+            final Tuple2<String, List<IToken>> tuple2 = tokeniseFunction(body, List.empty());
+            return tokenise(tuple2._1, tokens.prependAll(tuple2._2));
         }
 
         if (body.startsWith("new ")) {
@@ -57,7 +58,7 @@ public class Tokeniser implements ITokeniser {
 
         if (!tokens.isEmpty() && tokens.head().equals(Token.NEW)) {
             final String className = body.substring(0, body.indexOf("("));
-            return tokenise(body.replaceFirst("^[a-zA-Z0-9_]+ *", ""), tokens.prepend(ClassName.of(className)));
+            return tokenise(body.replaceFirst("^[^(]+ *", ""), tokens.prepend(ClassName.of(className)));
         }
 
         if (!tokens.isEmpty() && tokens.head() instanceof ClassName && body.startsWith("()")) {
@@ -65,9 +66,6 @@ public class Tokeniser implements ITokeniser {
         }
         if (body.startsWith(";")) {
             return tokenise(body.replaceFirst("^; *", ""), tokens.prepend(Token.SEMICOLON));
-        }
-        if (body.startsWith("}")) {
-            return tokenise(body.replaceFirst("^\\} *", ""), tokens.prepend(Token.ENDFUNCTION));
         }
         if (body.startsWith("final ")) {
             return tokenise(body.replaceFirst("^final +", ""), tokens.prepend(Token.FINAL));
@@ -101,6 +99,33 @@ public class Tokeniser implements ITokeniser {
         }
         if (body.startsWith("}")) {
             return tokeniseClass(body.replaceFirst("^\\} *", ""), tokens.prepend(Token.ENDCLASS));
+        }
+
+        return new Tuple2<>(body, tokens);
+    }
+
+    private Tuple2<String, List<IToken>> tokeniseFunction(final String body, final List<IToken> tokens) {
+        if (body.startsWith("{")) {
+            return tokeniseFunction(body.replaceFirst("^\\{ *", ""), tokens.prepend(Token.STARTFUNCTION));
+        }
+        if (body.startsWith("}")) {
+            return tokeniseFunction(body.replaceFirst("^\\} *", ""), tokens.prepend(Token.ENDFUNCTION));
+        }
+
+        if (body.startsWith("new ")) {
+            return tokeniseFunction(body.replaceFirst("^new +", ""), tokens.prepend(Token.NEW));
+        }
+
+        if (!tokens.isEmpty() && tokens.head().equals(Token.NEW)) {
+            final String className = body.substring(0, body.indexOf("("));
+            return tokeniseFunction(body.replaceFirst("^[^(]+ *", ""), tokens.prepend(ClassName.of(className)));
+        }
+
+        if (!tokens.isEmpty() && tokens.head() instanceof ClassName && body.startsWith("()")) {
+            return tokeniseFunction(body.replaceFirst("\\( *\\) *", ""), tokens.prepend(Token.STARTFUNCTIONPARAMETERS).prepend(Token.ENDFUNCTIONPARAMETERS));
+        }
+        if (body.startsWith(";")) {
+            return tokeniseFunction(body.replaceFirst("^; *", ""), tokens.prepend(Token.SEMICOLON));
         }
 
         return new Tuple2<>(body, tokens);
