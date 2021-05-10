@@ -5,7 +5,7 @@ import me.shaftesbury.codegenerator.model.IConstructor;
 import me.shaftesbury.codegenerator.model.ILogicalClass;
 import org.junit.jupiter.api.Test;
 
-import static me.shaftesbury.codegenerator.LogicalClass.DEFAULT_CONSTRUCTOR;
+import static me.shaftesbury.codegenerator.model.Constructor.DEFAULT_CONSTRUCTOR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 

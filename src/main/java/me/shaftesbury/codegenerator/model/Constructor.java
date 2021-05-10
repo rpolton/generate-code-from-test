@@ -9,6 +9,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class Constructor implements IConstructor {
+    public static final Constructor DEFAULT_CONSTRUCTOR = new Constructor(builder().withParameters(ParameterList.builder().build()).withBody(FunctionBody.builder().build()));
     private final ParameterList functionParameters;
     private final FunctionBody body;
 

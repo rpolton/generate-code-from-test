@@ -22,7 +22,7 @@ class FunctionNameFinderTest {
         final FunctionName f = FunctionName.of("f");
         final Traversable<IToken> tokens = List.of(f);
 
-        final Map<IClassName, ? extends Traversable<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsedInTest(classNamesUsedInTest, tokens);
+        final Map<IClassName, ? extends Traversable<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
 
         final Traversable<IFunctionName> functions = List.of(f);
         assertThat(functionsUsedInTest).containsExactly(new Tuple2(className, functions));

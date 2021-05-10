@@ -3,15 +3,15 @@ package me.shaftesbury.codegenerator;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.Set;
 import io.vavr.collection.Traversable;
-import me.shaftesbury.codegenerator.model.Constructor;
 import me.shaftesbury.codegenerator.model.IConstructor;
 import me.shaftesbury.codegenerator.model.ILogicalClass;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import static me.shaftesbury.codegenerator.model.Constructor.DEFAULT_CONSTRUCTOR;
+
 public class LogicalClass implements ILogicalClass {
-    public static final Constructor DEFAULT_CONSTRUCTOR = null;
     private final IClassName name;
     private final Set<IConstructor> constructors;
     private final Set<ILogicalFunction> functions;

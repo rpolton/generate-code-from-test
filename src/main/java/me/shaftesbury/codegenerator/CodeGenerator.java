@@ -1,5 +1,6 @@
 package me.shaftesbury.codegenerator;
 
+import io.vavr.Tuple2;
 import io.vavr.collection.Map;
 import io.vavr.collection.Traversable;
 import me.shaftesbury.codegenerator.model.IFunctionName;
@@ -9,6 +10,7 @@ import me.shaftesbury.codegenerator.tokeniser.IToken;
 import me.shaftesbury.codegenerator.tokeniser.ITokeniser;
 import me.shaftesbury.codegenerator.tokeniser.Tokeniser;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class CodeGenerator implements ICodeGenerator {
@@ -16,12 +18,14 @@ public class CodeGenerator implements ICodeGenerator {
     private final Supplier<ITokeniser> tokeniserFactory;
     private final Supplier<IClassNameFinder> classNameFinderFactory;
     private final Supplier<IFunctionNameFinder> functionNameFinderBuilder;
+    private final Supplier<PartialCodeGenerator> partialCodeGeneratorFactory;
 
     public CodeGenerator(final Builder builder) {
         executionContext = builder.executionContext;
         tokeniserFactory = builder.tokeniserBuilder;
         classNameFinderFactory = builder.classNameFinder;
         functionNameFinderBuilder = builder.functionNameFinder;
+        partialCodeGeneratorFactory = builder.partialCodeGenerator;
     }
 
 //    private Option<Exception> tryAgain(final Traversable<ILogicalClass> classes) {
@@ -61,35 +65,43 @@ public class CodeGenerator implements ICodeGenerator {
 
     @Override
     public Traversable<ILogicalClass> generateCode(final ITestMethod testMethod) {
+        final PartialCodeGenerator partialCodeGenerator = partialCodeGeneratorFactory.get();
         final ITokeniser tokeniser = tokeniserFactory.get();
         final IClassNameFinder classNameFinder = classNameFinderFactory.get();
         final IFunctionNameFinder functionNameFinder = functionNameFinderBuilder.get();
 
-        final Traversable<ILogicalClass> existingSourceCodeClasses = executionContext.getClasses();
-        final Traversable<IClassName> existingClassNames = existingSourceCodeClasses.map(ILogicalClass::getName);
+//        final Traversable<ILogicalClass> classesInContext = executionContext.getClasses();
+//        final Traversable<IClassName> classNamesInContext = classesInContext.map(ILogicalClass::getName);
 
         final Traversable<IToken> tokens = tokeniser.tokenise(testMethod);
         final Traversable<IClassName> classesUsedInTestMethod = classNameFinder.findConstructedClasses(tokens);
-        final Traversable<IClassName> classNamesUsedInTestNotAlreadyInContext = classesUsedInTestMethod.filterNot(existingClassNames::contains);
+        final Traversable<PartialClass> constructorsForClassesUsedInTestMethod = partialCodeGenerator.generateConstructorCodeForClasses(classesUsedInTestMethod);
+//        final Traversable<IClassName> classNamesUsedInTestNotAlreadyInContext = classesUsedInTestMethod.filterNot(classNamesInContext::contains);
 
-        final Map<IClassName, ? extends Traversable<IFunctionName>> functionsUsedInTestByClass = functionNameFinder.findFunctionsUsedInTest(classNamesUsedInTestNotAlreadyInContext, tokens);
-        return functionsUsedInTestByClass
-                .filterNot(t -> executionContext.allFunctionsAreInTheContext(t._1, t._2))
-                .map(t -> generateCodeForClass(t._1, t._2));
+        final Map<IClassName, ? extends Traversable<IFunctionName>> classAndFnsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
+        return classAndFnsUsedInTest
+                .map(generatePartialClass(partialCodeGenerator, constructorsForClassesUsedInTestMethod))
+                .map(t -> partialCodeGenerator.generateCodeForClass(t._1, t._2));
+//                .filterNot(t -> executionContext.allFunctionsAreInTheContext(t._1, t._2))
     }
 
-    private ILogicalClass generateCodeForClass(final IClassName className, final Traversable<IFunctionName> functionNames) {
-        final LogicalClass.Builder builder = LogicalClass.builder()
-                .withName(className)
-                .withDefaultConstructor();
-        final LogicalClass.Builder builder1 = functionNames.foldRight(builder, (name, br) -> br.withMethod(LogicalFunction.builder().withName(name).build()));
-        return builder1.build();
+    private Function<Tuple2<IClassName, ? extends Traversable<IFunctionName>>, Tuple2<PartialClass, Traversable<IFunctionName>>> generatePartialClass(final PartialCodeGenerator partialCodeGenerator, final Traversable<PartialClass> constructorsForClassesUsedInTestMethod) {
+        return t -> new Tuple2<>(
+                generatePartialClass(partialCodeGenerator, constructorsForClassesUsedInTestMethod, t._1),
+                t._2);
+    }
+
+    private PartialClass generatePartialClass(final PartialCodeGenerator partialCodeGenerator, final Traversable<PartialClass> constructorsForClassesUsedInTestMethod, final IClassName className) {
+        return constructorsForClassesUsedInTestMethod
+                .find(ptl -> ptl.getClassName().equals(className))
+                .getOrElse(() -> partialCodeGenerator.generateCodeForConstructor(className));
     }
 
     public static class Builder {
         public Supplier<ITokeniser> tokeniserBuilder;
         public Supplier<IClassNameFinder> classNameFinder;
         public Supplier<IFunctionNameFinder> functionNameFinder;
+        public Supplier<PartialCodeGenerator> partialCodeGenerator;
         private IExecutionContext executionContext;
 
         public Builder withExecutionContext(final IExecutionContext executionContext) {
@@ -112,6 +124,11 @@ public class CodeGenerator implements ICodeGenerator {
             return this;
         }
 
+        public Builder withPartialCodeGenerator(final Supplier<PartialCodeGenerator> partialCodeGenerator) {
+            this.partialCodeGenerator = partialCodeGenerator;
+            return this;
+        }
+
         public CodeGenerator build() {
             return new CodeGenerator(this);
         }
@@ -123,6 +140,7 @@ public class CodeGenerator implements ICodeGenerator {
                     .withExecutionContext(executionContext)
                     .withTokeniserBuilder(Tokeniser::new)
                     .withClassNameFinderBuilder(ClassNameFinder::new)
+                    .withPartialCodeGenerator(PartialCodeGenerator::new)
                     .build();
         }
     }

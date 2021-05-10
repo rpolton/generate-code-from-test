@@ -2,6 +2,8 @@ package me.shaftesbury.codegenerator.model;
 
 import io.vavr.collection.List;
 import me.shaftesbury.codegenerator.text.ILine;
+import me.shaftesbury.codegenerator.tokeniser.ClassName;
+import me.shaftesbury.codegenerator.tokeniser.FunctionName;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -17,12 +19,12 @@ import static org.mockito.Mockito.when;
 class TestMethodTest {
     @Test
     void getClassName(@Mock final ILine line) {
-        assertThat(new TestMethod(List.of(line)).getClassName()).isEqualTo("Test");
+        assertThat(new TestMethod(List.of(line))).extracting(TestMethod::getClassName).isEqualTo(ClassName.of("Test"));
     }
 
     @Test
     void getMethodName(@Mock final ILine line) {
-        assertThat(new TestMethod(List.of(line)).getMethodName()).isEqualTo("test");
+        assertThat(new TestMethod(List.of(line))).extracting(TestMethod::getMethodName).isEqualTo(FunctionName.of("test"));
     }
 
     @Test
@@ -30,7 +32,7 @@ class TestMethodTest {
         when(line1.toString()).thenReturn("void test() {");
         when(line2.toString()).thenReturn("new A();");
         when(line3.toString()).thenReturn("}");
-        assertThat(new TestMethod(List.of(line1, line2, line3)).getMethod()).isEqualTo("public class Test { void test() { new A(); } }");
+        assertThat(new TestMethod(List.of(line1, line2, line3))).extracting(TestMethod::getMethod).isEqualTo("public class Test { void test() { new A(); } }");
     }
 
     /*
