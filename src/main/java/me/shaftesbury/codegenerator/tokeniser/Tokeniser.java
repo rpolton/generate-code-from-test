@@ -124,10 +124,19 @@ public class Tokeniser implements ITokeniser {
         if (!tokens.isEmpty() && tokens.head() instanceof ClassName && body.startsWith("()")) {
             return tokeniseFunction(body.replaceFirst("\\( *\\) *", ""), tokens.prepend(Token.STARTFUNCTIONPARAMETERS).prepend(Token.ENDFUNCTIONPARAMETERS));
         }
+        if (!tokens.isEmpty() && tokens.head() instanceof FunctionName && body.startsWith("()")) {
+            return tokeniseFunction(body.replaceFirst("\\( *\\) *", ""), tokens.prepend(Token.STARTFUNCTIONPARAMETERS).prepend(Token.ENDFUNCTIONPARAMETERS));
+        }
         if (body.startsWith(";")) {
             return tokeniseFunction(body.replaceFirst("^; *", ""), tokens.prepend(Token.SEMICOLON));
         }
-
+        if (body.startsWith(".")) {
+            return tokeniseFunction(body.replaceFirst("\\.", ""), tokens.prepend(Token.DOT));
+        }
+        if (body.matches("^[a-zA-Z]+\\(.*")) {
+            final String functionName = body.substring(0, body.indexOf("("));
+            return tokeniseFunction(body.replaceFirst("^[^(]+ *", ""), tokens.prepend(FunctionName.of(functionName)));
+        }
         return new Tuple2<>(body, tokens);
     }
 }
