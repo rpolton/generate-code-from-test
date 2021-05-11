@@ -1,11 +1,13 @@
 package me.shaftesbury.codegenerator.tokeniser;
 
+import io.vavr.collection.List;
 import io.vavr.collection.Traversable;
 import me.shaftesbury.codegenerator.Reference;
 import org.junit.jupiter.api.Test;
 
 import static me.shaftesbury.codegenerator.tokeniser.Token.ASSIGNMENT;
 import static me.shaftesbury.codegenerator.tokeniser.Token.CLASS;
+import static me.shaftesbury.codegenerator.tokeniser.Token.DOT;
 import static me.shaftesbury.codegenerator.tokeniser.Token.ENDCLASS;
 import static me.shaftesbury.codegenerator.tokeniser.Token.ENDFUNCTION;
 import static me.shaftesbury.codegenerator.tokeniser.Token.ENDFUNCTIONPARAMETERS;
@@ -20,7 +22,7 @@ import static me.shaftesbury.codegenerator.tokeniser.Token.TESTANNOTATION;
 import static me.shaftesbury.codegenerator.tokeniser.Token.VOIDRETURNTYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TokeniserTest {
+class TokeniserTest {
     @Test
     void newTokenAndClassName() {
         final String testMethodBody = "new A()";
@@ -55,10 +57,31 @@ public class TokeniserTest {
     }
 
     @Test
-    void testFunction() {
-        final String testMethod = "@Test void test() {     new A(); }";
+    void testFunctionContainingDefaultConstructor() {
+        final String testFunction = "@Test void testFunction() { new A(); }";
+        final java.util.List<IToken> expectedTokens = List.of(TESTANNOTATION, VOIDRETURNTYPE, FunctionName.of("testFunction"),
+                STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, STARTFUNCTION, NEW, ClassName.of("A"),
+                STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, SEMICOLON, ENDFUNCTION)
+                .toJavaList();
         final Tokeniser tokeniser = new Tokeniser();
-        final Traversable<IToken> tokens = tokeniser.tokenise(testMethod);
-        assertThat(tokens.toJavaList()).containsExactly(TESTANNOTATION, VOIDRETURNTYPE, FunctionName.of("test"), STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, STARTFUNCTION, NEW, ClassName.of("A"), STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, SEMICOLON, ENDFUNCTION);
+
+        final Traversable<IToken> actualTokens = tokeniser.tokenise(testFunction);
+
+        assertThat(actualTokens.toJavaList()).containsExactlyElementsOf(expectedTokens);
+    }
+
+    @Test
+    void testFunctionContainingFunctionCall() {
+        final String testFunction = "@Test void testFunction() { new A().doTheThing(); }";
+        final java.util.List<IToken> expectedTokens = List.of(TESTANNOTATION, VOIDRETURNTYPE, FunctionName.of("testFunction"),
+                STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, STARTFUNCTION, NEW, ClassName.of("A"),
+                STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, DOT, FunctionName.of("doTheThing"),
+                STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, SEMICOLON, ENDFUNCTION)
+                .toJavaList();
+        final Tokeniser tokeniser = new Tokeniser();
+
+        final Traversable<IToken> actualTokens = tokeniser.tokenise(testFunction);
+
+        assertThat(actualTokens.toJavaList()).containsExactlyElementsOf(expectedTokens);
     }
 }

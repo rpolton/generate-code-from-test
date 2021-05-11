@@ -20,6 +20,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 
 import java.util.function.Supplier;
 
+import static me.shaftesbury.codegenerator.tokeniser.Token.ENDFUNCTIONPARAMETERS;
+import static me.shaftesbury.codegenerator.tokeniser.Token.STARTFUNCTIONPARAMETERS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -50,9 +52,10 @@ class CodeGeneratorTest {
                 .withPartialCodeGeneratorFactory(partialCodeGeneratorFactory)
                 .build();
         // final String testFunction = "@Test void test() { new A().doTheThing(); }";
-        final List<IToken> tokens = List.of(Token.TESTANNOTATION, Token.VOIDRETURNTYPE,
-                FunctionName.of("test"), Token.NOPARAMS, Token.STARTFUNCTION, Token.NEW, className, Token.NOPARAMS,
-                Token.DOT, doTheThing, Token.NOPARAMS, Token.SEMICOLON, Token.ENDFUNCTION);
+        final List<IToken> tokens = List.of(Token.TESTANNOTATION, Token.VOIDRETURNTYPE, FunctionName.of("test"),
+                STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, Token.STARTFUNCTION, Token.NEW, className,
+                STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, Token.DOT, doTheThing,
+                STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, Token.SEMICOLON, Token.ENDFUNCTION);
 
         when(partialCodeGeneratorFactory.get()).thenReturn(partialCodeGenerator);
         when(tokeniserFactory.get()).thenReturn(tokeniser);
@@ -89,9 +92,10 @@ class CodeGeneratorTest {
                 .withPartialCodeGeneratorFactory(partialCodeGeneratorFactory)
                 .build();
         // final String testFunction = "@Test void test() { new A().doTheThing(); }";
-        final List<IToken> tokens = List.of(Token.TESTANNOTATION, Token.VOIDRETURNTYPE,
-                FunctionName.of("test"), Token.NOPARAMS, Token.STARTFUNCTION, Token.NEW, className, Token.NOPARAMS,
-                Token.DOT, doTheThing, Token.NOPARAMS, Token.SEMICOLON, Token.ENDFUNCTION);
+        final List<IToken> tokens = List.of(Token.TESTANNOTATION, Token.VOIDRETURNTYPE, FunctionName.of("test"),
+                STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, Token.STARTFUNCTION, Token.NEW, className,
+                STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, Token.DOT, doTheThing,
+                STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, Token.SEMICOLON, Token.ENDFUNCTION);
         // public class A { public A() {} public void doTheThing() {} }
         final ILogicalClass expectedClass = LogicalClass.builder().withName(className)
                 .withDefaultConstructor()
@@ -133,9 +137,9 @@ class CodeGeneratorTest {
                 .withPartialCodeGeneratorFactory(partialCodeGeneratorFactory)
                 .build();
 //         final String testFunction = "@Test void test() {     new A(); }";
-        final List<IToken> tokens = List.of(Token.TESTANNOTATION, Token.VOIDRETURNTYPE,
-                FunctionName.of("test"), Token.NOPARAMS, Token.STARTFUNCTION, Token.NEW, className, Token.NOPARAMS,
-                Token.SEMICOLON, Token.ENDFUNCTION);
+        final List<IToken> tokens = List.of(Token.TESTANNOTATION, Token.VOIDRETURNTYPE, FunctionName.of("test"),
+                STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, Token.STARTFUNCTION, Token.NEW, className,
+                STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, Token.SEMICOLON, Token.ENDFUNCTION);
         // public class A { public A() {} }
         final ILogicalClass expectedClass = LogicalClass.builder().withName(className)
                 .withDefaultConstructor()
@@ -177,9 +181,10 @@ class CodeGeneratorTest {
                 .withPartialCodeGeneratorFactory(partialCodeGeneratorFactory)
                 .build();
         // final String testFunction = "@Test void test() { new A().doTheThing(); }";
-        final List<IToken> tokens = List.of(Token.TESTANNOTATION, Token.VOIDRETURNTYPE,
-                FunctionName.of("test"), Token.NOPARAMS, Token.STARTFUNCTION, Token.NEW, className, Token.NOPARAMS,
-                Token.DOT, doTheThing, Token.NOPARAMS, Token.SEMICOLON, Token.ENDFUNCTION);
+        final List<IToken> tokens = List.of(Token.TESTANNOTATION, Token.VOIDRETURNTYPE, FunctionName.of("test"),
+                STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, Token.STARTFUNCTION, Token.NEW, className,
+                STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, Token.DOT, doTheThing,
+                STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, Token.SEMICOLON, Token.ENDFUNCTION);
         // public class A { public A() {} public void doTheThing() {} }
         final ILogicalClass expectedClass = LogicalClass.builder().withName(className)
                 .withDefaultConstructor()
