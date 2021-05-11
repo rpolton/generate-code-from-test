@@ -28,10 +28,10 @@ public class IntegrationTest {
 
     private final CodeExecutor codeExecutor = new CodeExecutor(executionContext -> CodeGenerator.builder()
             .withExecutionContext(executionContext)
-            .withTokeniserBuilder(tokeniserFactory)
-            .withClassNameFinderBuilder(classNameFinderBuilder)
-            .withFunctionNameFinderBuilder(functionNameFinderFactory)
-            .withPartialCodeGenerator(partialCodeGeneratorBuilder)
+            .withTokeniserFactory(tokeniserFactory)
+            .withClassNameFinderFactory(classNameFinderBuilder)
+            .withFunctionNameFinderFactory(functionNameFinderFactory)
+            .withPartialCodeGeneratorFactory(partialCodeGeneratorBuilder)
             .build());
 
     @Test

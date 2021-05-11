@@ -44,10 +44,10 @@ class CodeGeneratorTest {
             @Mock final PartialCodeGenerator partialCodeGenerator, @Mock final PartialClass partialClass) {
         final ICodeGenerator codeGenerator = CodeGenerator.builder()
                 .withExecutionContext(executionContext)
-                .withTokeniserBuilder(tokeniserBuilder)
-                .withClassNameFinderBuilder(classNameFinderBuilder)
-                .withFunctionNameFinderBuilder(functionNameFinderBuilder)
-                .withPartialCodeGenerator(partialCodeGeneratorBuilder)
+                .withTokeniserFactory(tokeniserBuilder)
+                .withClassNameFinderFactory(classNameFinderBuilder)
+                .withFunctionNameFinderFactory(functionNameFinderBuilder)
+                .withPartialCodeGeneratorFactory(partialCodeGeneratorBuilder)
                 .build();
         // final String testFunction = "@Test void test() { new A().doTheThing(); }";
         final List<IToken> tokens = List.of(Token.TESTANNOTATION, Token.VOIDRETURNTYPE,
@@ -83,10 +83,10 @@ class CodeGeneratorTest {
             @Mock final PartialCodeGenerator partialCodeGenerator, @Mock final PartialClass partialClass) {
         final ICodeGenerator codeGenerator = CodeGenerator.builder()
                 .withExecutionContext(executionContext)
-                .withTokeniserBuilder(tokeniserBuilder)
-                .withClassNameFinderBuilder(classNameFinderBuilder)
-                .withFunctionNameFinderBuilder(functionNameFinderBuilder)
-                .withPartialCodeGenerator(partialCodeGeneratorBuilder)
+                .withTokeniserFactory(tokeniserBuilder)
+                .withClassNameFinderFactory(classNameFinderBuilder)
+                .withFunctionNameFinderFactory(functionNameFinderBuilder)
+                .withPartialCodeGeneratorFactory(partialCodeGeneratorBuilder)
                 .build();
         // final String testFunction = "@Test void test() { new A().doTheThing(); }";
         final List<IToken> tokens = List.of(Token.TESTANNOTATION, Token.VOIDRETURNTYPE,
@@ -127,10 +127,10 @@ class CodeGeneratorTest {
             @Mock final PartialCodeGenerator partialCodeGenerator, @Mock final PartialClass partialClass, @Mock final ILogicalClass logicalClass) {
         final ICodeGenerator codeGenerator = CodeGenerator.builder()
                 .withExecutionContext(executionContext)
-                .withTokeniserBuilder(tokeniserBuilder)
-                .withClassNameFinderBuilder(classNameFinderBuilder)
-                .withFunctionNameFinderBuilder(functionNameFinderBuilder)
-                .withPartialCodeGenerator(partialCodeGeneratorBuilder)
+                .withTokeniserFactory(tokeniserBuilder)
+                .withClassNameFinderFactory(classNameFinderBuilder)
+                .withFunctionNameFinderFactory(functionNameFinderBuilder)
+                .withPartialCodeGeneratorFactory(partialCodeGeneratorBuilder)
                 .build();
 //         final String testFunction = "@Test void test() {     new A(); }";
         final List<IToken> tokens = List.of(Token.TESTANNOTATION, Token.VOIDRETURNTYPE,
@@ -171,10 +171,10 @@ class CodeGeneratorTest {
             @Mock final PartialCodeGenerator partialCodeGenerator, @Mock final PartialClass partialClass, @Mock final ILogicalClass logicalClass) {
         final ICodeGenerator codeGenerator = CodeGenerator.builder()
                 .withExecutionContext(executionContext)
-                .withTokeniserBuilder(tokeniserBuilder)
-                .withClassNameFinderBuilder(classNameFinderBuilder)
-                .withFunctionNameFinderBuilder(functionNameFinderBuilder)
-                .withPartialCodeGenerator(partialCodeGeneratorBuilder)
+                .withTokeniserFactory(tokeniserBuilder)
+                .withClassNameFinderFactory(classNameFinderBuilder)
+                .withFunctionNameFinderFactory(functionNameFinderBuilder)
+                .withPartialCodeGeneratorFactory(partialCodeGeneratorBuilder)
                 .build();
         // final String testFunction = "@Test void test() { new A().doTheThing(); }";
         final List<IToken> tokens = List.of(Token.TESTANNOTATION, Token.VOIDRETURNTYPE,
@@ -209,8 +209,8 @@ class CodeGeneratorTest {
     class Getters {
         @Test
         void executionContext(@Mock final ExecutionContext executionContext, @Mock final Supplier<ITokeniser> tokeniserBuilder, @Mock final Supplier<IClassNameFinder> classNameFinder, @Mock final Supplier<PartialCodeGenerator> partialCodeGeneratorBuilder) {
-            final CodeGenerator codeGenerator = CodeGenerator.builder().withExecutionContext(executionContext).withTokeniserBuilder(tokeniserBuilder).withClassNameFinderBuilder(classNameFinder)
-                    .withPartialCodeGenerator(partialCodeGeneratorBuilder)
+            final CodeGenerator codeGenerator = CodeGenerator.builder().withExecutionContext(executionContext).withTokeniserFactory(tokeniserBuilder).withClassNameFinderFactory(classNameFinder)
+                    .withPartialCodeGeneratorFactory(partialCodeGeneratorBuilder)
                     .build();
 
             assertThat(codeGenerator)
@@ -222,19 +222,28 @@ class CodeGeneratorTest {
     @Nested
     class Builder {
         @Test
-        void buildWithStatementBuilder(@Mock final IExecutionContext context, @Mock final Supplier<ITokeniser> tokeniserBuilder,
-                                       @Mock final Supplier<IClassNameFinder> classNameFinder, @Mock final Supplier<PartialCodeGenerator> partialCodeGeneratorBuilder) {
+        void buildWithStatementBuilder(@Mock final IExecutionContext context,
+                                       @Mock final Supplier<ITokeniser> tokeniserFactory,
+                                       @Mock final Supplier<IClassNameFinder> classNameFinderFactory,
+                                       @Mock final Supplier<IFunctionNameFinder> functionNameFinderFactory,
+                                       @Mock final Supplier<PartialCodeGenerator> partialCodeGeneratorFactory) {
 
             final ICodeGenerator codeGenerator = CodeGenerator.builder()
                     .withExecutionContext(context)
-                    .withTokeniserBuilder(tokeniserBuilder)
-                    .withClassNameFinderBuilder(classNameFinder)
-                    .withPartialCodeGenerator(partialCodeGeneratorBuilder)
+                    .withTokeniserFactory(tokeniserFactory)
+                    .withClassNameFinderFactory(classNameFinderFactory)
+                    .withFunctionNameFinderFactory(functionNameFinderFactory)
+                    .withPartialCodeGeneratorFactory(partialCodeGeneratorFactory)
                     .build();
 
-            assertThat(codeGenerator.getExecutionContext()).isEqualTo(context);
-            assertThat(codeGenerator.getTokeniserFactory()).isSameAs(tokeniserBuilder);
-            assertThat(codeGenerator.getClassNameFinderFactory()).isSameAs(classNameFinder);
+            assertThat(codeGenerator)
+                    .extracting(
+                            ICodeGenerator::getExecutionContext,
+                            ICodeGenerator::getTokeniserFactory,
+                            ICodeGenerator::getClassNameFinderFactory,
+                            ICodeGenerator::getFunctionNameFinderFactory,
+                            ICodeGenerator::getPartialCodeGeneratorFactory)
+                    .containsExactly(context, tokeniserFactory, classNameFinderFactory, functionNameFinderFactory, partialCodeGeneratorFactory);
         }
     }
 }

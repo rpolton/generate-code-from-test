@@ -15,4 +15,8 @@ public interface ICodeGenerator {
     Supplier<ITokeniser> getTokeniserFactory();
 
     Supplier<IClassNameFinder> getClassNameFinderFactory();
+
+    Supplier<IFunctionNameFinder> getFunctionNameFinderFactory();
+
+    Supplier<PartialCodeGenerator> getPartialCodeGeneratorFactory();
 }

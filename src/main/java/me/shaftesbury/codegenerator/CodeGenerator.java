@@ -15,14 +15,14 @@ public class CodeGenerator implements ICodeGenerator {
     private final IExecutionContext executionContext;
     private final Supplier<ITokeniser> tokeniserFactory;
     private final Supplier<IClassNameFinder> classNameFinderFactory;
-    private final Supplier<IFunctionNameFinder> functionNameFinderBuilder;
+    private final Supplier<IFunctionNameFinder> functionNameFinderFactory;
     private final Supplier<PartialCodeGenerator> partialCodeGeneratorFactory;
 
     public CodeGenerator(final Builder builder) {
         executionContext = builder.executionContext;
         tokeniserFactory = builder.tokeniserBuilder;
         classNameFinderFactory = builder.classNameFinder;
-        functionNameFinderBuilder = builder.functionNameFinder;
+        functionNameFinderFactory = builder.functionNameFinder;
         partialCodeGeneratorFactory = builder.partialCodeGenerator;
     }
 
@@ -62,11 +62,21 @@ public class CodeGenerator implements ICodeGenerator {
     }
 
     @Override
+    public Supplier<IFunctionNameFinder> getFunctionNameFinderFactory() {
+        return functionNameFinderFactory;
+    }
+
+    @Override
+    public Supplier<PartialCodeGenerator> getPartialCodeGeneratorFactory() {
+        return partialCodeGeneratorFactory;
+    }
+
+    @Override
     public Traversable<ILogicalClass> generateCode(final ITestMethod testMethod) {
         final PartialCodeGenerator partialCodeGenerator = partialCodeGeneratorFactory.get();
         final ITokeniser tokeniser = tokeniserFactory.get();
         final IClassNameFinder classNameFinder = classNameFinderFactory.get();
-        final IFunctionNameFinder functionNameFinder = functionNameFinderBuilder.get();
+        final IFunctionNameFinder functionNameFinder = functionNameFinderFactory.get();
 
 //        final Traversable<ILogicalClass> classesInContext = executionContext.getClasses();
 //        final Traversable<IClassName> classNamesInContext = classesInContext.map(ILogicalClass::getName);
@@ -95,22 +105,22 @@ public class CodeGenerator implements ICodeGenerator {
             return this;
         }
 
-        public Builder withClassNameFinderBuilder(final Supplier<IClassNameFinder> classNameFinder) {
+        public Builder withClassNameFinderFactory(final Supplier<IClassNameFinder> classNameFinder) {
             this.classNameFinder = classNameFinder;
             return this;
         }
 
-        public Builder withFunctionNameFinderBuilder(final Supplier<IFunctionNameFinder> functionNameFinder) {
+        public Builder withFunctionNameFinderFactory(final Supplier<IFunctionNameFinder> functionNameFinder) {
             this.functionNameFinder = functionNameFinder;
             return this;
         }
 
-        public Builder withTokeniserBuilder(final Supplier<ITokeniser> tokeniserBuilder) {
+        public Builder withTokeniserFactory(final Supplier<ITokeniser> tokeniserBuilder) {
             this.tokeniserBuilder = tokeniserBuilder;
             return this;
         }
 
-        public Builder withPartialCodeGenerator(final Supplier<PartialCodeGenerator> partialCodeGenerator) {
+        public Builder withPartialCodeGeneratorFactory(final Supplier<PartialCodeGenerator> partialCodeGenerator) {
             this.partialCodeGenerator = partialCodeGenerator;
             return this;
         }
@@ -124,9 +134,9 @@ public class CodeGenerator implements ICodeGenerator {
         public ICodeGenerator create(final IExecutionContext executionContext) {
             return CodeGenerator.builder()
                     .withExecutionContext(executionContext)
-                    .withTokeniserBuilder(Tokeniser::new)
-                    .withClassNameFinderBuilder(ClassNameFinder::new)
-                    .withPartialCodeGenerator(PartialCodeGenerator::new)
+                    .withTokeniserFactory(Tokeniser::new)
+                    .withClassNameFinderFactory(ClassNameFinder::new)
+                    .withPartialCodeGeneratorFactory(PartialCodeGenerator::new)
                     .build();
         }
     }
