@@ -35,29 +35,29 @@ class CodeGeneratorTest {
 
     @Test
     void generateCodeReturnsNoneWhenNoCodeNeedsToBeGeneratedBecauseTheMethodAlreadyExists(
-            @Mock final Supplier<IClassNameFinder> classNameFinderBuilder, @Mock final IClassNameFinder classNameFinder,
-            @Mock final Supplier<ITokeniser> tokeniserBuilder, @Mock final ITokeniser tokeniser,
-            @Mock final Supplier<IFunctionNameFinder> functionNameFinderBuilder, @Mock final IFunctionNameFinder functionNameFinder,
+            @Mock final Supplier<IClassNameFinder> classNameFinderFactory, @Mock final IClassNameFinder classNameFinder,
+            @Mock final Supplier<ITokeniser> tokeniserFactory, @Mock final ITokeniser tokeniser,
+            @Mock final Supplier<IFunctionNameFinder> functionNameFinderFactory, @Mock final IFunctionNameFinder functionNameFinder,
             @Mock final IExecutionContext executionContext, @Mock final ITestMethod testMethod,
             @Mock final ILogicalClass logicalClass, @Mock final IClassName className, @Mock final IFunctionName doTheThing,
-            @Mock final Supplier<PartialCodeGenerator> partialCodeGeneratorBuilder,
+            @Mock final Supplier<PartialCodeGenerator> partialCodeGeneratorFactory,
             @Mock final PartialCodeGenerator partialCodeGenerator, @Mock final PartialClass partialClass) {
         final ICodeGenerator codeGenerator = CodeGenerator.builder()
                 .withExecutionContext(executionContext)
-                .withTokeniserFactory(tokeniserBuilder)
-                .withClassNameFinderFactory(classNameFinderBuilder)
-                .withFunctionNameFinderFactory(functionNameFinderBuilder)
-                .withPartialCodeGeneratorFactory(partialCodeGeneratorBuilder)
+                .withTokeniserFactory(tokeniserFactory)
+                .withClassNameFinderFactory(classNameFinderFactory)
+                .withFunctionNameFinderFactory(functionNameFinderFactory)
+                .withPartialCodeGeneratorFactory(partialCodeGeneratorFactory)
                 .build();
         // final String testFunction = "@Test void test() { new A().doTheThing(); }";
         final List<IToken> tokens = List.of(Token.TESTANNOTATION, Token.VOIDRETURNTYPE,
                 FunctionName.of("test"), Token.NOPARAMS, Token.STARTFUNCTION, Token.NEW, className, Token.NOPARAMS,
                 Token.DOT, doTheThing, Token.NOPARAMS, Token.SEMICOLON, Token.ENDFUNCTION);
 
-        when(partialCodeGeneratorBuilder.get()).thenReturn(partialCodeGenerator);
-        when(tokeniserBuilder.get()).thenReturn(tokeniser);
-        when(classNameFinderBuilder.get()).thenReturn(classNameFinder);
-        when(functionNameFinderBuilder.get()).thenReturn(functionNameFinder);
+        when(partialCodeGeneratorFactory.get()).thenReturn(partialCodeGenerator);
+        when(tokeniserFactory.get()).thenReturn(tokeniser);
+        when(classNameFinderFactory.get()).thenReturn(classNameFinder);
+        when(functionNameFinderFactory.get()).thenReturn(functionNameFinder);
 
         when(tokeniser.tokenise(testMethod)).thenReturn(tokens);
         when(classNameFinder.findConstructedClasses(tokens)).thenReturn(List.of(className));
@@ -74,19 +74,19 @@ class CodeGeneratorTest {
 
     @Test
     void generateCodeReturnsCodeWhenTheClassAlreadyExistsButTheMethodDoesNot(
-            @Mock final Supplier<IClassNameFinder> classNameFinderBuilder, @Mock final IClassNameFinder classNameFinder,
-            @Mock final Supplier<ITokeniser> tokeniserBuilder, @Mock final ITokeniser tokeniser,
-            @Mock final Supplier<IFunctionNameFinder> functionNameFinderBuilder, @Mock final IFunctionNameFinder functionNameFinder,
+            @Mock final Supplier<IClassNameFinder> classNameFinderFactory, @Mock final IClassNameFinder classNameFinder,
+            @Mock final Supplier<ITokeniser> tokeniserFactory, @Mock final ITokeniser tokeniser,
+            @Mock final Supplier<IFunctionNameFinder> functionNameFinderFactory, @Mock final IFunctionNameFinder functionNameFinder,
             @Mock final IExecutionContext executionContext, @Mock final ITestMethod testMethod,
-            @Mock final ILogicalClass logicalClass, @Mock final IClassName className, @Mock final IFunctionName doTheThing,
-            @Mock final Supplier<PartialCodeGenerator> partialCodeGeneratorBuilder,
+            @Mock final IClassName className, @Mock final IFunctionName doTheThing,
+            @Mock final Supplier<PartialCodeGenerator> partialCodeGeneratorFactory,
             @Mock final PartialCodeGenerator partialCodeGenerator, @Mock final PartialClass partialClass) {
         final ICodeGenerator codeGenerator = CodeGenerator.builder()
                 .withExecutionContext(executionContext)
-                .withTokeniserFactory(tokeniserBuilder)
-                .withClassNameFinderFactory(classNameFinderBuilder)
-                .withFunctionNameFinderFactory(functionNameFinderBuilder)
-                .withPartialCodeGeneratorFactory(partialCodeGeneratorBuilder)
+                .withTokeniserFactory(tokeniserFactory)
+                .withClassNameFinderFactory(classNameFinderFactory)
+                .withFunctionNameFinderFactory(functionNameFinderFactory)
+                .withPartialCodeGeneratorFactory(partialCodeGeneratorFactory)
                 .build();
         // final String testFunction = "@Test void test() { new A().doTheThing(); }";
         final List<IToken> tokens = List.of(Token.TESTANNOTATION, Token.VOIDRETURNTYPE,
@@ -98,10 +98,10 @@ class CodeGeneratorTest {
                 .withMethod(LogicalFunction.builder().withName(doTheThing).havingNoParameters().returning(ReturnType.VOID).withBody(List.of(Token.EMPTY)).build())
                 .build();
 
-        when(partialCodeGeneratorBuilder.get()).thenReturn(partialCodeGenerator);
-        when(tokeniserBuilder.get()).thenReturn(tokeniser);
-        when(classNameFinderBuilder.get()).thenReturn(classNameFinder);
-        when(functionNameFinderBuilder.get()).thenReturn(functionNameFinder);
+        when(partialCodeGeneratorFactory.get()).thenReturn(partialCodeGenerator);
+        when(tokeniserFactory.get()).thenReturn(tokeniser);
+        when(classNameFinderFactory.get()).thenReturn(classNameFinder);
+        when(functionNameFinderFactory.get()).thenReturn(functionNameFinder);
 
         when(tokeniser.tokenise(testMethod)).thenReturn(tokens);
         when(classNameFinder.findConstructedClasses(tokens)).thenReturn(List.of(className));
@@ -119,18 +119,18 @@ class CodeGeneratorTest {
 
     @Test
     void generateCodeReturnsListContainingGeneratedCodeWhenTheClassDoesNotAlreadyExist__AndOnlyTheDefaultConstructorIsUsedInTheTest(
-            @Mock final Supplier<IClassNameFinder> classNameFinderBuilder, @Mock final IClassNameFinder classNameFinder,
-            @Mock final Supplier<ITokeniser> tokeniserBuilder, @Mock final ITokeniser tokeniser,
-            @Mock final Supplier<IFunctionNameFinder> functionNameFinderBuilder, @Mock final IFunctionNameFinder functionNameFinder,
+            @Mock final Supplier<IClassNameFinder> classNameFinderFactory, @Mock final IClassNameFinder classNameFinder,
+            @Mock final Supplier<ITokeniser> tokeniserFactory, @Mock final ITokeniser tokeniser,
+            @Mock final Supplier<IFunctionNameFinder> functionNameFinderFactory, @Mock final IFunctionNameFinder functionNameFinder,
             @Mock final IExecutionContext executionContext, @Mock final ITestMethod testMethod,
-            @Mock final IClassName className, @Mock final Supplier<PartialCodeGenerator> partialCodeGeneratorBuilder,
-            @Mock final PartialCodeGenerator partialCodeGenerator, @Mock final PartialClass partialClass, @Mock final ILogicalClass logicalClass) {
+            @Mock final IClassName className, @Mock final Supplier<PartialCodeGenerator> partialCodeGeneratorFactory,
+            @Mock final PartialCodeGenerator partialCodeGenerator, @Mock final PartialClass partialClass) {
         final ICodeGenerator codeGenerator = CodeGenerator.builder()
                 .withExecutionContext(executionContext)
-                .withTokeniserFactory(tokeniserBuilder)
-                .withClassNameFinderFactory(classNameFinderBuilder)
-                .withFunctionNameFinderFactory(functionNameFinderBuilder)
-                .withPartialCodeGeneratorFactory(partialCodeGeneratorBuilder)
+                .withTokeniserFactory(tokeniserFactory)
+                .withClassNameFinderFactory(classNameFinderFactory)
+                .withFunctionNameFinderFactory(functionNameFinderFactory)
+                .withPartialCodeGeneratorFactory(partialCodeGeneratorFactory)
                 .build();
 //         final String testFunction = "@Test void test() {     new A(); }";
         final List<IToken> tokens = List.of(Token.TESTANNOTATION, Token.VOIDRETURNTYPE,
@@ -141,10 +141,10 @@ class CodeGeneratorTest {
                 .withDefaultConstructor()
                 .build();
 
-        when(partialCodeGeneratorBuilder.get()).thenReturn(partialCodeGenerator);
-        when(tokeniserBuilder.get()).thenReturn(tokeniser);
-        when(classNameFinderBuilder.get()).thenReturn(classNameFinder);
-        when(functionNameFinderBuilder.get()).thenReturn(functionNameFinder);
+        when(partialCodeGeneratorFactory.get()).thenReturn(partialCodeGenerator);
+        when(tokeniserFactory.get()).thenReturn(tokeniser);
+        when(classNameFinderFactory.get()).thenReturn(classNameFinder);
+        when(functionNameFinderFactory.get()).thenReturn(functionNameFinder);
 
         when(tokeniser.tokenise(testMethod)).thenReturn(tokens);
         when(classNameFinder.findConstructedClasses(tokens)).thenReturn(List.of(className));
@@ -162,19 +162,19 @@ class CodeGeneratorTest {
 
     @Test
     void generateCodeReturnsListContainingGeneratedCodeWhenTheClassDoesNotAlreadyExist(
-            @Mock final Supplier<IClassNameFinder> classNameFinderBuilder, @Mock final IClassNameFinder classNameFinder,
-            @Mock final Supplier<ITokeniser> tokeniserBuilder, @Mock final ITokeniser tokeniser,
-            @Mock final Supplier<IFunctionNameFinder> functionNameFinderBuilder, @Mock final IFunctionNameFinder functionNameFinder,
+            @Mock final Supplier<IClassNameFinder> classNameFinderFactory, @Mock final IClassNameFinder classNameFinder,
+            @Mock final Supplier<ITokeniser> tokeniserFactory, @Mock final ITokeniser tokeniser,
+            @Mock final Supplier<IFunctionNameFinder> functionNameFinderFactory, @Mock final IFunctionNameFinder functionNameFinder,
             @Mock final IExecutionContext executionContext, @Mock final ITestMethod testMethod,
             @Mock final IClassName className, @Mock final IFunctionName doTheThing,
-            @Mock final Supplier<PartialCodeGenerator> partialCodeGeneratorBuilder,
-            @Mock final PartialCodeGenerator partialCodeGenerator, @Mock final PartialClass partialClass, @Mock final ILogicalClass logicalClass) {
+            @Mock final Supplier<PartialCodeGenerator> partialCodeGeneratorFactory,
+            @Mock final PartialCodeGenerator partialCodeGenerator, @Mock final PartialClass partialClass) {
         final ICodeGenerator codeGenerator = CodeGenerator.builder()
                 .withExecutionContext(executionContext)
-                .withTokeniserFactory(tokeniserBuilder)
-                .withClassNameFinderFactory(classNameFinderBuilder)
-                .withFunctionNameFinderFactory(functionNameFinderBuilder)
-                .withPartialCodeGeneratorFactory(partialCodeGeneratorBuilder)
+                .withTokeniserFactory(tokeniserFactory)
+                .withClassNameFinderFactory(classNameFinderFactory)
+                .withFunctionNameFinderFactory(functionNameFinderFactory)
+                .withPartialCodeGeneratorFactory(partialCodeGeneratorFactory)
                 .build();
         // final String testFunction = "@Test void test() { new A().doTheThing(); }";
         final List<IToken> tokens = List.of(Token.TESTANNOTATION, Token.VOIDRETURNTYPE,
@@ -186,10 +186,10 @@ class CodeGeneratorTest {
                 .withMethod(LogicalFunction.builder().withName(doTheThing).havingNoParameters().returning(ReturnType.VOID).withBody(List.of(Token.EMPTY)).build())
                 .build();
 
-        when(partialCodeGeneratorBuilder.get()).thenReturn(partialCodeGenerator);
-        when(tokeniserBuilder.get()).thenReturn(tokeniser);
-        when(classNameFinderBuilder.get()).thenReturn(classNameFinder);
-        when(functionNameFinderBuilder.get()).thenReturn(functionNameFinder);
+        when(partialCodeGeneratorFactory.get()).thenReturn(partialCodeGenerator);
+        when(tokeniserFactory.get()).thenReturn(tokeniser);
+        when(classNameFinderFactory.get()).thenReturn(classNameFinder);
+        when(functionNameFinderFactory.get()).thenReturn(functionNameFinder);
 
         when(tokeniser.tokenise(testMethod)).thenReturn(tokens);
         when(classNameFinder.findConstructedClasses(tokens)).thenReturn(List.of(className));
@@ -208,25 +208,11 @@ class CodeGeneratorTest {
     @Nested
     class Getters {
         @Test
-        void executionContext(@Mock final ExecutionContext executionContext, @Mock final Supplier<ITokeniser> tokeniserBuilder, @Mock final Supplier<IClassNameFinder> classNameFinder, @Mock final Supplier<PartialCodeGenerator> partialCodeGeneratorBuilder) {
-            final CodeGenerator codeGenerator = CodeGenerator.builder().withExecutionContext(executionContext).withTokeniserFactory(tokeniserBuilder).withClassNameFinderFactory(classNameFinder)
-                    .withPartialCodeGeneratorFactory(partialCodeGeneratorBuilder)
-                    .build();
-
-            assertThat(codeGenerator)
-                    .extracting(CodeGenerator::getClassNameFinderFactory, CodeGenerator::getExecutionContext, CodeGenerator::getTokeniserFactory)
-                    .containsExactly(classNameFinder, executionContext, tokeniserBuilder);
-        }
-    }
-
-    @Nested
-    class Builder {
-        @Test
-        void buildWithStatementBuilder(@Mock final IExecutionContext context,
-                                       @Mock final Supplier<ITokeniser> tokeniserFactory,
-                                       @Mock final Supplier<IClassNameFinder> classNameFinderFactory,
-                                       @Mock final Supplier<IFunctionNameFinder> functionNameFinderFactory,
-                                       @Mock final Supplier<PartialCodeGenerator> partialCodeGeneratorFactory) {
+        void gettersReturnComponents(@Mock final IExecutionContext context,
+                                     @Mock final Supplier<ITokeniser> tokeniserFactory,
+                                     @Mock final Supplier<IClassNameFinder> classNameFinderFactory,
+                                     @Mock final Supplier<IFunctionNameFinder> functionNameFinderFactory,
+                                     @Mock final Supplier<PartialCodeGenerator> partialCodeGeneratorFactory) {
 
             final ICodeGenerator codeGenerator = CodeGenerator.builder()
                     .withExecutionContext(context)
