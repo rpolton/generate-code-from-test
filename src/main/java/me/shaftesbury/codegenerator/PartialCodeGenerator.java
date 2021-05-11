@@ -7,15 +7,21 @@ import me.shaftesbury.codegenerator.model.ILogicalClass;
 
 import java.util.function.Function;
 
+import static java.util.Objects.requireNonNull;
+
 public class PartialCodeGenerator {
+    private final PartialClassFactory partialClassFactory;
+
+    public PartialCodeGenerator(final PartialClassFactory partialClassFactory) {
+        this.partialClassFactory = requireNonNull(partialClassFactory, "partialClassFactory must not be null");
+    }
+
     public Traversable<PartialClass> generateConstructorCodeForClasses(final Traversable<IClassName> classesUsedInTestMethod) {
         return classesUsedInTestMethod.map(this::generateCodeForConstructor);
     }
 
     public PartialClass generateCodeForConstructor(final IClassName className) {
-        return new PartialClass(className, LogicalClass.builder()
-                .withName(className)
-                .withDefaultConstructor());
+        return partialClassFactory.create(className);
     }
 
     public ILogicalClass generateCodeForClass(final PartialClass partialClass, final Traversable<IFunctionName> functionNames) {

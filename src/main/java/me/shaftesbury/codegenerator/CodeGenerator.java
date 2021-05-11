@@ -7,7 +7,6 @@ import me.shaftesbury.codegenerator.model.ILogicalClass;
 import me.shaftesbury.codegenerator.model.ITestMethod;
 import me.shaftesbury.codegenerator.tokeniser.IToken;
 import me.shaftesbury.codegenerator.tokeniser.ITokeniser;
-import me.shaftesbury.codegenerator.tokeniser.Tokeniser;
 
 import java.util.function.Supplier;
 
@@ -127,17 +126,6 @@ public class CodeGenerator implements ICodeGenerator {
 
         public CodeGenerator build() {
             return new CodeGenerator(this);
-        }
-    }
-
-    public static class Factory {
-        public ICodeGenerator create(final IExecutionContext executionContext) {
-            return CodeGenerator.builder()
-                    .withExecutionContext(executionContext)
-                    .withTokeniserFactory(Tokeniser::new)
-                    .withClassNameFinderFactory(ClassNameFinder::new)
-                    .withPartialCodeGeneratorFactory(PartialCodeGenerator::new)
-                    .build();
         }
     }
 }

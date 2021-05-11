@@ -24,7 +24,8 @@ public class IntegrationTest {
     private final Supplier<ITokeniser> tokeniserFactory = () -> tokeniser;
     private final IFunctionNameFinder functionNameFinder = new FunctionNameFinder();
     private final Supplier<IFunctionNameFinder> functionNameFinderFactory = () -> functionNameFinder;
-    private final Supplier<PartialCodeGenerator> partialCodeGeneratorBuilder = PartialCodeGenerator::new;
+    private final PartialClassFactory partialClassFactory = new PartialClassFactory();
+    private final Supplier<PartialCodeGenerator> partialCodeGeneratorBuilder = () -> new PartialCodeGenerator(partialClassFactory);
 
     private final CodeExecutor codeExecutor = new CodeExecutor(executionContext -> CodeGenerator.builder()
             .withExecutionContext(executionContext)
