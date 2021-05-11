@@ -1,6 +1,5 @@
 package me.shaftesbury.codegenerator;
 
-import io.vavr.Tuple2;
 import io.vavr.collection.Map;
 import io.vavr.collection.Traversable;
 import me.shaftesbury.codegenerator.model.IFunctionName;
@@ -10,7 +9,6 @@ import me.shaftesbury.codegenerator.tokeniser.IToken;
 import me.shaftesbury.codegenerator.tokeniser.ITokeniser;
 import me.shaftesbury.codegenerator.tokeniser.Tokeniser;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class CodeGenerator implements ICodeGenerator {
@@ -80,21 +78,9 @@ public class CodeGenerator implements ICodeGenerator {
 
         final Map<IClassName, ? extends Traversable<IFunctionName>> classAndFnsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
         return classAndFnsUsedInTest
-                .map(generatePartialClass(partialCodeGenerator, constructorsForClassesUsedInTestMethod))
-                .map(t -> partialCodeGenerator.generateCodeForClass(t._1, t._2));
-//                .filterNot(t -> executionContext.allFunctionsAreInTheContext(t._1, t._2))
-    }
-
-    private Function<Tuple2<IClassName, ? extends Traversable<IFunctionName>>, Tuple2<PartialClass, Traversable<IFunctionName>>> generatePartialClass(final PartialCodeGenerator partialCodeGenerator, final Traversable<PartialClass> constructorsForClassesUsedInTestMethod) {
-        return t -> new Tuple2<>(
-                generatePartialClass(partialCodeGenerator, constructorsForClassesUsedInTestMethod, t._1),
-                t._2);
-    }
-
-    private PartialClass generatePartialClass(final PartialCodeGenerator partialCodeGenerator, final Traversable<PartialClass> constructorsForClassesUsedInTestMethod, final IClassName className) {
-        return constructorsForClassesUsedInTestMethod
-                .find(ptl -> ptl.getClassName().equals(className))
-                .getOrElse(() -> partialCodeGenerator.generateCodeForConstructor(className));
+                .map(partialCodeGenerator.initialisePartialClass(constructorsForClassesUsedInTestMethod))
+                .map(t -> partialCodeGenerator.generateCodeForClass(t._1, t._2))
+                .filterNot(executionContext::allFunctionsAreInTheContext);
     }
 
     public static class Builder {

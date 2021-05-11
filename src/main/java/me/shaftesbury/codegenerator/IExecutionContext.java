@@ -10,5 +10,8 @@ public interface IExecutionContext {
 
     RuntimeCompiler getRuntimeCompiler();
 
+    // ToDo remove this in favour of allFns(LogCls)
     boolean allFunctionsAreInTheContext(IClassName iClassName, Traversable<IFunctionName> iFunctionNames);
+
+    boolean allFunctionsAreInTheContext(ILogicalClass cls);
 }

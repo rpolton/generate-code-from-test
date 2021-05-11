@@ -1,5 +1,6 @@
 package me.shaftesbury.codegenerator;
 
+import io.vavr.Tuple2;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
@@ -7,7 +8,6 @@ import io.vavr.collection.Traversable;
 import me.shaftesbury.codegenerator.model.IFunctionName;
 import me.shaftesbury.codegenerator.model.ILogicalClass;
 import me.shaftesbury.codegenerator.model.ITestMethod;
-import me.shaftesbury.codegenerator.tokeniser.ClassName;
 import me.shaftesbury.codegenerator.tokeniser.FunctionName;
 import me.shaftesbury.codegenerator.tokeniser.IToken;
 import me.shaftesbury.codegenerator.tokeniser.ITokeniser;
@@ -58,13 +58,14 @@ class CodeGeneratorTest {
         when(tokeniserBuilder.get()).thenReturn(tokeniser);
         when(classNameFinderBuilder.get()).thenReturn(classNameFinder);
         when(functionNameFinderBuilder.get()).thenReturn(functionNameFinder);
+
         when(tokeniser.tokenise(testMethod)).thenReturn(tokens);
-        when(classNameFinder.findConstructedClasses(tokens)).thenReturn(List.of(className));
         when(classNameFinder.findConstructedClasses(tokens)).thenReturn(List.of(className));
         when(partialCodeGenerator.generateConstructorCodeForClasses(List.of(className))).thenReturn(List.of(partialClass));
         Mockito.<Map<IClassName, ? extends Traversable<IFunctionName>>>when(functionNameFinder.findFunctionsUsed(tokens)).thenReturn(HashMap.of(className, List.of(doTheThing)));
-        when(partialClass.getClassName()).thenReturn(className);
+        when(partialCodeGenerator.initialisePartialClass(List.of(partialClass))).thenReturn(t -> new Tuple2<>(partialClass, List.of(doTheThing)));
         when(partialCodeGenerator.generateCodeForClass(partialClass, List.of(doTheThing))).thenReturn(logicalClass);
+        when(executionContext.allFunctionsAreInTheContext(logicalClass)).thenReturn(true);
 
         final Traversable<ILogicalClass> code = codeGenerator.generateCode(testMethod);
 
@@ -101,13 +102,14 @@ class CodeGeneratorTest {
         when(tokeniserBuilder.get()).thenReturn(tokeniser);
         when(classNameFinderBuilder.get()).thenReturn(classNameFinder);
         when(functionNameFinderBuilder.get()).thenReturn(functionNameFinder);
+
         when(tokeniser.tokenise(testMethod)).thenReturn(tokens);
-        Mockito.<Map<IClassName, ? extends Traversable<IFunctionName>>>when(functionNameFinder.findFunctionsUsed(tokens)).thenReturn(HashMap.of(className, List.of(doTheThing)));
         when(classNameFinder.findConstructedClasses(tokens)).thenReturn(List.of(className));
         when(partialCodeGenerator.generateConstructorCodeForClasses(List.of(className))).thenReturn(List.of(partialClass));
         Mockito.<Map<IClassName, ? extends Traversable<IFunctionName>>>when(functionNameFinder.findFunctionsUsed(tokens)).thenReturn(HashMap.of(className, List.of(doTheThing)));
-        when(partialClass.getClassName()).thenReturn(className);
-        when(partialCodeGenerator.generateCodeForClass(partialClass, List.of(doTheThing))).thenReturn(logicalClass);
+        when(partialCodeGenerator.initialisePartialClass(List.of(partialClass))).thenReturn(t -> new Tuple2<>(partialClass, List.of(doTheThing)));
+        when(partialCodeGenerator.generateCodeForClass(partialClass, List.of(doTheThing))).thenReturn(expectedClass);
+        when(executionContext.allFunctionsAreInTheContext(expectedClass)).thenReturn(false);
 
         final Traversable<ILogicalClass> code = codeGenerator.generateCode(testMethod);
 
@@ -143,13 +145,14 @@ class CodeGeneratorTest {
         when(tokeniserBuilder.get()).thenReturn(tokeniser);
         when(classNameFinderBuilder.get()).thenReturn(classNameFinder);
         when(functionNameFinderBuilder.get()).thenReturn(functionNameFinder);
+
         when(tokeniser.tokenise(testMethod)).thenReturn(tokens);
-        Mockito.<Map<IClassName, ? extends Traversable<IFunctionName>>>when(functionNameFinder.findFunctionsUsed(tokens)).thenReturn(HashMap.of(className, List.empty()));
         when(classNameFinder.findConstructedClasses(tokens)).thenReturn(List.of(className));
         when(partialCodeGenerator.generateConstructorCodeForClasses(List.of(className))).thenReturn(List.of(partialClass));
-        Mockito.<Map<IClassName, ? extends Traversable<IFunctionName>>>when(functionNameFinder.findFunctionsUsed(tokens)).thenReturn(HashMap.of(ClassName.of("A"), List.empty()));
-        when(partialClass.getClassName()).thenReturn(className);
-        when(partialCodeGenerator.generateCodeForClass(partialClass, List.empty())).thenReturn(logicalClass);
+        Mockito.<Map<IClassName, ? extends Traversable<IFunctionName>>>when(functionNameFinder.findFunctionsUsed(tokens)).thenReturn(HashMap.of(className, List.empty()));
+        when(partialCodeGenerator.initialisePartialClass(List.of(partialClass))).thenReturn(t -> new Tuple2<>(partialClass, List.empty()));
+        when(partialCodeGenerator.generateCodeForClass(partialClass, List.empty())).thenReturn(expectedClass);
+        when(executionContext.allFunctionsAreInTheContext(expectedClass)).thenReturn(false);
 
         final Traversable<ILogicalClass> code = codeGenerator.generateCode(testMethod);
 
@@ -187,13 +190,14 @@ class CodeGeneratorTest {
         when(tokeniserBuilder.get()).thenReturn(tokeniser);
         when(classNameFinderBuilder.get()).thenReturn(classNameFinder);
         when(functionNameFinderBuilder.get()).thenReturn(functionNameFinder);
+
         when(tokeniser.tokenise(testMethod)).thenReturn(tokens);
-        Mockito.<Map<IClassName, ? extends Traversable<IFunctionName>>>when(functionNameFinder.findFunctionsUsed(tokens)).thenReturn(HashMap.of(className, List.of(doTheThing)));
         when(classNameFinder.findConstructedClasses(tokens)).thenReturn(List.of(className));
         when(partialCodeGenerator.generateConstructorCodeForClasses(List.of(className))).thenReturn(List.of(partialClass));
         Mockito.<Map<IClassName, ? extends Traversable<IFunctionName>>>when(functionNameFinder.findFunctionsUsed(tokens)).thenReturn(HashMap.of(className, List.of(doTheThing)));
-        when(partialClass.getClassName()).thenReturn(className);
-        when(partialCodeGenerator.generateCodeForClass(partialClass, List.of(doTheThing))).thenReturn(logicalClass);
+        when(partialCodeGenerator.initialisePartialClass(List.of(partialClass))).thenReturn(t -> new Tuple2<>(partialClass, List.of(doTheThing)));
+        when(partialCodeGenerator.generateCodeForClass(partialClass, List.of(doTheThing))).thenReturn(expectedClass);
+        when(executionContext.allFunctionsAreInTheContext(expectedClass)).thenReturn(false);
 
         final Traversable<ILogicalClass> code = codeGenerator.generateCode(testMethod);
 

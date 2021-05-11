@@ -32,6 +32,11 @@ public class ExecutionContext implements IExecutionContext {
         return classIsInTheContext(iClassName) && functionsAreInTheClass(classes.filter(cls -> cls.getName().equals(iClassName)), iFunctionNames);
     }
 
+    @Override
+    public boolean allFunctionsAreInTheContext(final ILogicalClass cls) {
+        return false;
+    }
+
     private boolean classIsInTheContext(final IClassName iClassName) {
         return classes.map(ILogicalClass::getName).contains(iClassName);
     }
