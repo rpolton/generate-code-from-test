@@ -1,6 +1,6 @@
 package me.shaftesbury.codegenerator;
 
-import io.vavr.Tuple2;
+import io.vavr.Tuple;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
@@ -14,9 +14,10 @@ import me.shaftesbury.codegenerator.tokeniser.ITokeniser;
 import me.shaftesbury.codegenerator.tokeniser.Token;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.function.Supplier;
 
@@ -25,7 +26,7 @@ import static me.shaftesbury.codegenerator.tokeniser.Token.STARTFUNCTIONPARAMETE
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-@MockitoSettings
+@ExtendWith(MockitoExtension.class)
 class CodeGeneratorTest {
 
     @Test
@@ -66,7 +67,7 @@ class CodeGeneratorTest {
         when(classNameFinder.findConstructedClasses(tokens)).thenReturn(List.of(className));
         when(partialCodeGenerator.generateConstructorCodeForClasses(List.of(className))).thenReturn(List.of(partialClass));
         Mockito.<Map<IClassName, ? extends Traversable<IFunctionName>>>when(functionNameFinder.findFunctionsUsed(tokens)).thenReturn(HashMap.of(className, List.of(doTheThing)));
-        when(partialCodeGenerator.initialisePartialClass(List.of(partialClass))).thenReturn(t -> new Tuple2<>(partialClass, List.of(doTheThing)));
+        when(partialCodeGenerator.initialisePartialClass(List.of(partialClass))).thenReturn(t -> Tuple.of(partialClass, List.of(doTheThing)));
         when(partialCodeGenerator.generateCodeForClass(partialClass, List.of(doTheThing))).thenReturn(logicalClass);
         when(executionContext.allFunctionsAreInTheContext(logicalClass)).thenReturn(true);
 
@@ -111,7 +112,7 @@ class CodeGeneratorTest {
         when(classNameFinder.findConstructedClasses(tokens)).thenReturn(List.of(className));
         when(partialCodeGenerator.generateConstructorCodeForClasses(List.of(className))).thenReturn(List.of(partialClass));
         Mockito.<Map<IClassName, ? extends Traversable<IFunctionName>>>when(functionNameFinder.findFunctionsUsed(tokens)).thenReturn(HashMap.of(className, List.of(doTheThing)));
-        when(partialCodeGenerator.initialisePartialClass(List.of(partialClass))).thenReturn(t -> new Tuple2<>(partialClass, List.of(doTheThing)));
+        when(partialCodeGenerator.initialisePartialClass(List.of(partialClass))).thenReturn(t -> Tuple.of(partialClass, List.of(doTheThing)));
         when(partialCodeGenerator.generateCodeForClass(partialClass, List.of(doTheThing))).thenReturn(expectedClass);
         when(executionContext.allFunctionsAreInTheContext(expectedClass)).thenReturn(false);
 
@@ -154,7 +155,7 @@ class CodeGeneratorTest {
         when(classNameFinder.findConstructedClasses(tokens)).thenReturn(List.of(className));
         when(partialCodeGenerator.generateConstructorCodeForClasses(List.of(className))).thenReturn(List.of(partialClass));
         Mockito.<Map<IClassName, ? extends Traversable<IFunctionName>>>when(functionNameFinder.findFunctionsUsed(tokens)).thenReturn(HashMap.of(className, List.empty()));
-        when(partialCodeGenerator.initialisePartialClass(List.of(partialClass))).thenReturn(t -> new Tuple2<>(partialClass, List.empty()));
+        when(partialCodeGenerator.initialisePartialClass(List.of(partialClass))).thenReturn(t -> Tuple.of(partialClass, List.empty()));
         when(partialCodeGenerator.generateCodeForClass(partialClass, List.empty())).thenReturn(expectedClass);
         when(executionContext.allFunctionsAreInTheContext(expectedClass)).thenReturn(false);
 
@@ -200,7 +201,7 @@ class CodeGeneratorTest {
         when(classNameFinder.findConstructedClasses(tokens)).thenReturn(List.of(className));
         when(partialCodeGenerator.generateConstructorCodeForClasses(List.of(className))).thenReturn(List.of(partialClass));
         Mockito.<Map<IClassName, ? extends Traversable<IFunctionName>>>when(functionNameFinder.findFunctionsUsed(tokens)).thenReturn(HashMap.of(className, List.of(doTheThing)));
-        when(partialCodeGenerator.initialisePartialClass(List.of(partialClass))).thenReturn(t -> new Tuple2<>(partialClass, List.of(doTheThing)));
+        when(partialCodeGenerator.initialisePartialClass(List.of(partialClass))).thenReturn(t -> Tuple.of(partialClass, List.of(doTheThing)));
         when(partialCodeGenerator.generateCodeForClass(partialClass, List.of(doTheThing))).thenReturn(expectedClass);
         when(executionContext.allFunctionsAreInTheContext(expectedClass)).thenReturn(false);
 

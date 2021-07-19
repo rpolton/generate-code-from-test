@@ -1,13 +1,14 @@
 package me.shaftesbury.codegenerator;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
-@MockitoSettings
+@ExtendWith(MockitoExtension.class)
 class PartialClassFactoryTest {
 
     @Test

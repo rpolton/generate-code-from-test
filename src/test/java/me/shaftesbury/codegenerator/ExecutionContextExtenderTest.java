@@ -1,8 +1,9 @@
 package me.shaftesbury.codegenerator;
 
-import org.mockito.junit.jupiter.MockitoSettings;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@MockitoSettings
+@ExtendWith(MockitoExtension.class)
 class ExecutionContextExtenderTest {
 
 //    @Test

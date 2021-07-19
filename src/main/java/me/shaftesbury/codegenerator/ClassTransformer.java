@@ -1,5 +1,6 @@
 package me.shaftesbury.codegenerator;
 
+import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.Traversable;
 import me.shaftesbury.codegenerator.model.Constructor;
@@ -71,7 +72,7 @@ public class ClassTransformer implements ITransformer<Traversable<IToken>, ILogi
     }
 
     private Tuple2<Traversable<IToken>, Fields> reducer_fields(final Traversable<IToken> tokens, final Fields.Builder builder) {
-        if (tokens.isEmpty()) return new Tuple2<>(tokens, builder.build());
+        if (tokens.isEmpty()) return Tuple.of(tokens, builder.build());
         final IToken token = tokens.head();
         final Traversable<IToken> tail = tokens.tail();
         if (PRIVATE.equals(token)) {
@@ -91,13 +92,13 @@ public class ClassTransformer implements ITransformer<Traversable<IToken>, ILogi
         } else if (SEMICOLON.equals(token)) {
             return reducer_fields(tail, builder);
         } else if (ENDFIELDS.equals(token)) {
-            return new Tuple2<>(tail, builder.build());
+            return Tuple.of(tail, builder.build());
         }
-        return new Tuple2<>(tail, builder.build());
+        return Tuple.of(tail, builder.build());
     }
 
     private Tuple2<Traversable<IToken>, IConstructor> reducer_constructor(final Traversable<IToken> tokens, final Constructor.Builder builder) {
-        if (tokens.isEmpty()) return new Tuple2<>(tokens, builder.build());
+        if (tokens.isEmpty()) return Tuple.of(tokens, builder.build());
         final IToken token = tokens.head();
         final Traversable<IToken> tail = tokens.tail();
         if (STARTFUNCTIONPARAMETERS.equals(token)) {
@@ -107,11 +108,11 @@ public class ClassTransformer implements ITransformer<Traversable<IToken>, ILogi
             final Tuple2<Traversable<IToken>, FunctionBody> t = reducer_function(tail, FunctionBody.builder());
             return reducer_constructor(t._1, builder.withBody(t._2));
         }
-        return new Tuple2<>(tokens, builder.build());
+        return Tuple.of(tokens, builder.build());
     }
 
     private Tuple2<Traversable<IToken>, ParameterList> reducer_functionParameters(final Traversable<IToken> tokens, final ParameterList.Builder builder) {
-        if (tokens.isEmpty()) return new Tuple2<>(tokens, builder.build());
+        if (tokens.isEmpty()) return Tuple.of(tokens, builder.build());
         final IToken token = tokens.head();
         final Traversable<IToken> tail = tokens.tail();
         if (INT.equals(token)) {
@@ -124,17 +125,17 @@ public class ClassTransformer implements ITransformer<Traversable<IToken>, ILogi
                 return reducer_functionParameters(tail2, builder.withParameter(FunctionParameter.of(TokenToTypeConverter.convert(token), name)));
             } else return null;//reducer_constructor(tail2, builder);
         } else if (ENDFUNCTIONPARAMETERS.equals(token)) {
-            return new Tuple2<>(tail, builder.build());
+            return Tuple.of(tail, builder.build());
         }
         return null;
     }
 
     private Tuple2<Traversable<IToken>, FunctionBody> reducer_function(final Traversable<IToken> tokens, final FunctionBody.Builder builder) {
-        if (tokens.isEmpty()) return new Tuple2<>(tokens, builder.build());
+        if (tokens.isEmpty()) return Tuple.of(tokens, builder.build());
         final IToken token = tokens.head();
         final Traversable<IToken> tail = tokens.tail();
         if (ENDFUNCTION.equals(token)) {
-            return new Tuple2<>(tokens, builder.build());
+            return Tuple.of(tokens, builder.build());
         } else {
             return reducer_function(tail, builder.withToken(token));
         }

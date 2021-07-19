@@ -8,12 +8,13 @@ import me.shaftesbury.codegenerator.tokeniser.FunctionName;
 import me.shaftesbury.codegenerator.tokeniser.IToken;
 import me.shaftesbury.codegenerator.tokeniser.Token;
 import org.junit.jupiter.api.Test;
-import org.mockito.junit.jupiter.MockitoSettings;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
-@MockitoSettings
+@ExtendWith(MockitoExtension.class)
 class ClassTransformerTest {
 
     @Test

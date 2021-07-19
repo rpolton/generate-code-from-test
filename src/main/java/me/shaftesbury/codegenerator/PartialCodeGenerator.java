@@ -1,5 +1,6 @@
 package me.shaftesbury.codegenerator;
 
+import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.Traversable;
 import me.shaftesbury.codegenerator.model.IFunctionName;
@@ -31,7 +32,7 @@ public class PartialCodeGenerator {
     }
 
     public Function<Tuple2<IClassName, ? extends Traversable<IFunctionName>>, Tuple2<PartialClass, Traversable<IFunctionName>>> initialisePartialClass(final Traversable<PartialClass> constructorsForClassesUsedInTestMethod) {
-        return t -> new Tuple2<>(
+        return t -> Tuple.of(
                 initialisePartialClass(constructorsForClassesUsedInTestMethod, t._1),
                 t._2);
     }

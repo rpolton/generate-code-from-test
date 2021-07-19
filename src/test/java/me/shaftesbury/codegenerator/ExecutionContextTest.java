@@ -8,14 +8,15 @@ import me.shaftesbury.codegenerator.tokeniser.ClassName;
 import me.shaftesbury.codegenerator.tokeniser.FunctionName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.mockito.Mockito.when;
 
-@MockitoSettings
+@ExtendWith(MockitoExtension.class)
 class ExecutionContextTest {
 
     public static final ClassName CLASS_NAME = ClassName.of("SourceCode");

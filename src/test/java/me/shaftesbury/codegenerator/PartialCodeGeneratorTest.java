@@ -3,14 +3,15 @@ package me.shaftesbury.codegenerator;
 import io.vavr.collection.List;
 import io.vavr.collection.Traversable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
-@MockitoSettings
+@ExtendWith(MockitoExtension.class)
 class PartialCodeGeneratorTest {
 
     @Test

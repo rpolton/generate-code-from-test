@@ -1,5 +1,6 @@
 package me.shaftesbury.codegenerator.tokeniser;
 
+import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
 import io.vavr.collection.Traversable;
@@ -101,7 +102,7 @@ public class Tokeniser implements ITokeniser {
             return tokeniseClass(body.replaceFirst("^\\} *", ""), tokens.prepend(Token.ENDCLASS));
         }
 
-        return new Tuple2<>(body, tokens);
+        return Tuple.of(body, tokens);
     }
 
     private Tuple2<String, List<IToken>> tokeniseFunction(final String body, final List<IToken> tokens) {
@@ -137,6 +138,6 @@ public class Tokeniser implements ITokeniser {
             final String functionName = body.substring(0, body.indexOf("("));
             return tokeniseFunction(body.replaceFirst("^[^(]+ *", ""), tokens.prepend(FunctionName.of(functionName)));
         }
-        return new Tuple2<>(body, tokens);
+        return Tuple.of(body, tokens);
     }
 }
