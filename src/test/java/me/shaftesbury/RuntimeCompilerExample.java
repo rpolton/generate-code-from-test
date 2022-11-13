@@ -3,32 +3,11 @@ package me.shaftesbury;
 import me.shaftesbury.codegenerator.imported.MethodInvocationUtils;
 import me.shaftesbury.codegenerator.imported.RuntimeCompiler;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.tools.Diagnostic;
-import javax.tools.DiagnosticCollector;
-import javax.tools.FileObject;
-import javax.tools.ForwardingJavaFileManager;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaCompiler.CompilationTask;
-import javax.tools.JavaFileObject;
-import javax.tools.JavaFileObject.Kind;
-import javax.tools.SimpleJavaFileObject;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
 
 /**
  * An example showing how to use the RuntimeCompiler utility class
@@ -128,5 +107,4 @@ public class RuntimeCompilerExample
         Collections.sort(list, comparator);
         System.out.println("Result: "+list);
     }
-
 }

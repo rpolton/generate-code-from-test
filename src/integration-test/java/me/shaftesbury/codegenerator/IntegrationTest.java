@@ -4,7 +4,7 @@ import io.vavr.collection.List;
 import me.shaftesbury.codegenerator.model.ITestMethod;
 import me.shaftesbury.codegenerator.model.TestMethod;
 import me.shaftesbury.codegenerator.tokeniser.ITokeniser;
-import me.shaftesbury.codegenerator.tokeniser.Tokeniser;
+import me.shaftesbury.codegenerator.tokeniser.ManualTokeniser;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -16,11 +16,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class IntegrationTest {
 
     private static final ClassTransformer classTransformer = new ClassTransformer();
-    private static ITokeniser tokeniser2 = new Tokeniser();
+    private static ITokeniser tokeniser2 = new ManualTokeniser();
     private final ExecutionContext.Factory executionContextFactory = new ExecutionContext.Factory();
     private final IClassNameFinder classNameFinder = new ClassNameFinder();
     private final Supplier<IClassNameFinder> classNameFinderBuilder = () -> classNameFinder;
-    private final ITokeniser tokeniser = new Tokeniser();
+    private final ITokeniser tokeniser = new ManualTokeniser();
     private final Supplier<ITokeniser> tokeniserFactory = () -> tokeniser;
     private final IFunctionNameFinder functionNameFinder = new FunctionNameFinder();
     private final Supplier<IFunctionNameFinder> functionNameFinderFactory = () -> functionNameFinder;

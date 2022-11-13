@@ -1,143 +1,72 @@
 package me.shaftesbury.codegenerator.tokeniser;
 
-import io.vavr.Tuple;
-import io.vavr.Tuple2;
-import io.vavr.collection.List;
-import io.vavr.collection.Traversable;
-import me.shaftesbury.codegenerator.Reference;
-import me.shaftesbury.codegenerator.model.ITestMethod;
+import com.github.javaparser.ast.Modifier;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.BodyDeclaration;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.Type;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.metamodel.ObjectCreationExprMetaModel;
+
+import java.util.List;
+import java.util.Optional;
 
 import static me.shaftesbury.codegenerator.tokeniser.Token.CLASS;
+import static me.shaftesbury.codegenerator.tokeniser.Token.ENDCLASS;
+import static me.shaftesbury.codegenerator.tokeniser.Token.ENDFUNCTION;
+import static me.shaftesbury.codegenerator.tokeniser.Token.ENDFUNCTIONPARAMETERS;
+import static me.shaftesbury.codegenerator.tokeniser.Token.NEW;
+import static me.shaftesbury.codegenerator.tokeniser.Token.PUBLIC;
+import static me.shaftesbury.codegenerator.tokeniser.Token.STARTCLASS;
+import static me.shaftesbury.codegenerator.tokeniser.Token.STARTFUNCTION;
+import static me.shaftesbury.codegenerator.tokeniser.Token.STARTFUNCTIONPARAMETERS;
+import static me.shaftesbury.codegenerator.tokeniser.Token.VOIDRETURNTYPE;
 
-public class Tokeniser implements ITokeniser {
-    @Override
-    public Traversable<IToken> tokenise(final String text) {
-        return tokenise(text, List.empty());
+public class Tokeniser extends VoidVisitorAdapter {
+    public void visit(MethodDeclaration n, Object arg) {
+        // extract method information here.
+        // put in to hashmap
+        List.<IToken>of(n.getType().isVoidType() ? VOIDRETURNTYPE : ENDCLASS);
+        n.getBody();
+        n.getName();
+        n.getParameters();
     }
 
-    @Override
-    public Traversable<IToken> tokenise(final ITestMethod testMethod) {
-        return tokenise(testMethod.getMethod().getBody(), List.empty());
+//        public void visit(final Expression e, final Object o) {
+//            final List<IToken> l = (List<IToken>) o;
+//        }
+
+    public void visit(final ClassOrInterfaceDeclaration decl, final Object o) {
+        final List<IToken> l = (List<IToken>) o;
+        decl.getModifiers().forEach(m -> m.accept(this, o));
+        l.addAll(List.of(CLASS, ClassName.of(decl.getName().asString()), STARTCLASS, ENDCLASS));
     }
 
-    private Traversable<IToken> tokenise(final String body, final List<IToken> tokens) {
-        if (body.isEmpty())
-            return tokens.reverse();
-
-        if (body.startsWith("public ")) {
-            return tokenise(body.replaceFirst("public +", ""), tokens);
-        }
-        if (body.startsWith("class ")) {
-            final Tuple2<String, List<IToken>> tuple2 = tokeniseClass(body.replaceFirst("class +", ""), tokens.prepend(CLASS));
-            return tokenise(tuple2._1, tokens.prependAll(tuple2._2));
-        }
-        if (body.startsWith("@Test")) {
-            return tokenise(body.replaceFirst("@Test[" + System.lineSeparator() + " ]+", ""), tokens.prepend(Token.TESTANNOTATION));
-        }
-
-        if (body.startsWith("void ")) {
-            return tokenise(body.replaceFirst("void +", ""), tokens.prepend(Token.VOIDRETURNTYPE));
-        }
-
-        if (!tokens.isEmpty() && tokens.head().equals(Token.VOIDRETURNTYPE)) {
-            final String functionName = body.substring(0, body.indexOf("("));
-            return tokenise(body.replaceFirst("^[^(]+ *", ""), tokens.prepend(FunctionName.of(functionName)));
-        }
-
-        if (!tokens.isEmpty() && tokens.head() instanceof FunctionName && body.startsWith("()")) {
-            return tokenise(body.replaceFirst("\\( *\\) *", ""), tokens.prepend(Token.STARTFUNCTIONPARAMETERS).prepend(Token.ENDFUNCTIONPARAMETERS));
-        }
-
-        if (body.startsWith("{")) {
-            final Tuple2<String, List<IToken>> tuple2 = tokeniseFunction(body, List.empty());
-            return tokenise(tuple2._1, tokens.prependAll(tuple2._2));
-        }
-
-        if (body.startsWith("new ")) {
-            return tokenise(body.replaceFirst("^new +", ""), tokens.prepend(Token.NEW));
-        }
-
-        if (!tokens.isEmpty() && tokens.head().equals(Token.NEW)) {
-            final String className = body.substring(0, body.indexOf("("));
-            return tokenise(body.replaceFirst("^[^(]+ *", ""), tokens.prepend(ClassName.of(className)));
-        }
-
-        if (!tokens.isEmpty() && tokens.head() instanceof ClassName && body.startsWith("()")) {
-            return tokenise(body.replaceFirst("\\( *\\) +", ""), tokens.prepend(Token.STARTFUNCTIONPARAMETERS).prepend(Token.ENDFUNCTIONPARAMETERS));
-        }
-        if (body.startsWith(";")) {
-            return tokenise(body.replaceFirst("^; *", ""), tokens.prepend(Token.SEMICOLON));
-        }
-        if (body.startsWith("final ")) {
-            return tokenise(body.replaceFirst("^final +", ""), tokens.prepend(Token.FINAL));
-        }
-        if (body.startsWith("int ")) {
-            return tokenise(body.replaceFirst("^int +", ""), tokens.prepend(Token.INT));
-        }
-        if (body.startsWith("= ")) {
-            return tokenise(body.replaceFirst("^= +", ""), tokens.prepend(Token.ASSIGNMENT));
-        }
-        if (body.matches("^[0-9]+(;| .*)")) {
-            final int endIndex = body.indexOf(" ");
-            final String value = body.substring(0, endIndex < 0 ? body.indexOf(";") : endIndex);
-            return tokenise(body.replaceFirst("^[0-9]+ *", ""), tokens.prepend(Value.of(Integer.parseInt(value))));
-        }
-        if (body.matches("^[a-zA-Z0-9_]+ .*")) {
-            final String refName = body.substring(0, body.indexOf(" "));
-            return tokenise(body.replaceFirst("^[a-zA-Z0-9_]+ ", ""), tokens.prepend(Reference.of(refName)));
-        }
-
-        return tokens.reverse();
+    public void visit(final Modifier m, final Object o) {
+        final List<IToken> l = (List<IToken>) o;
+        l.addAll(List.of(PUBLIC));
     }
 
-    private Tuple2<String, List<IToken>> tokeniseClass(final String body, final List<IToken> tokens) {
-        if (body.matches("^[a-zA-Z0-9_]+ .*")) {
-            final String refName = body.substring(0, body.indexOf(" "));
-            return tokeniseClass(body.replaceFirst("^[a-zA-Z0-9_]+ ", ""), tokens.prepend(ClassName.of(refName)));
-        }
-        if (body.startsWith("{")) {
-            return tokeniseClass(body.replaceFirst("^\\{ *", ""), tokens.prepend(Token.STARTCLASS));
-        }
-        if (body.startsWith("}")) {
-            return tokeniseClass(body.replaceFirst("^\\} *", ""), tokens.prepend(Token.ENDCLASS));
-        }
-
-        return Tuple.of(body, tokens);
+    public void visit(final ConstructorDeclaration c, final Object o) {
+        final List<IToken> l = (List<IToken>) o;
+        l.addAll(List.of(FunctionName.of(c.getNameAsString()), STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, STARTFUNCTION, ENDFUNCTION));
     }
 
-    private Tuple2<String, List<IToken>> tokeniseFunction(final String body, final List<IToken> tokens) {
-        if (body.startsWith("{")) {
-            return tokeniseFunction(body.replaceFirst("^\\{ *", ""), tokens.prepend(Token.STARTFUNCTION));
-        }
-        if (body.startsWith("}")) {
-            return tokeniseFunction(body.replaceFirst("^\\} *", ""), tokens.prepend(Token.ENDFUNCTION));
-        }
+    public void visit(final ObjectCreationExpr e, final Object o) {
+        final ClassOrInterfaceType type = e.getType();
+        final NodeList<Expression> arguments = e.getArguments();
+        final Optional<NodeList<BodyDeclaration<?>>> anonymousClassBody = e.getAnonymousClassBody();
+        final Optional<Expression> scope = e.getScope();
+        final ObjectCreationExprMetaModel metaModel = e.getMetaModel();
+        final Optional<NodeList<Type>> typeArguments = e.getTypeArguments();
 
-        if (body.startsWith("new ")) {
-            return tokeniseFunction(body.replaceFirst("^new +", ""), tokens.prepend(Token.NEW));
-        }
-
-        if (!tokens.isEmpty() && tokens.head().equals(Token.NEW)) {
-            final String className = body.substring(0, body.indexOf("("));
-            return tokeniseFunction(body.replaceFirst("^[^(]+ *", ""), tokens.prepend(ClassName.of(className)));
-        }
-
-        if (!tokens.isEmpty() && tokens.head() instanceof ClassName && body.startsWith("()")) {
-            return tokeniseFunction(body.replaceFirst("\\( *\\) *", ""), tokens.prepend(Token.STARTFUNCTIONPARAMETERS).prepend(Token.ENDFUNCTIONPARAMETERS));
-        }
-        if (!tokens.isEmpty() && tokens.head() instanceof FunctionName && body.startsWith("()")) {
-            return tokeniseFunction(body.replaceFirst("\\( *\\) *", ""), tokens.prepend(Token.STARTFUNCTIONPARAMETERS).prepend(Token.ENDFUNCTIONPARAMETERS));
-        }
-        if (body.startsWith(";")) {
-            return tokeniseFunction(body.replaceFirst("^; *", ""), tokens.prepend(Token.SEMICOLON));
-        }
-        if (body.startsWith(".")) {
-            return tokeniseFunction(body.replaceFirst("\\.", ""), tokens.prepend(Token.DOT));
-        }
-        if (body.matches("^[a-zA-Z]+\\(.*")) {
-            final String functionName = body.substring(0, body.indexOf("("));
-            return tokeniseFunction(body.replaceFirst("^[^(]+ *", ""), tokens.prepend(FunctionName.of(functionName)));
-        }
-        return Tuple.of(body, tokens);
+        final List<IToken> l = (List<IToken>) o;
+        l.addAll(List.<IToken>of(NEW, ClassName.of(e.getType().getName().asString())));
     }
 }
+
