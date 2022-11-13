@@ -38,19 +38,6 @@ class TokeniserTest {
 //    }
 
     @Test
-    void simplestClass() {
-        final List<IToken> tokens = new ArrayList<>();
-        final String testMethodBody = "public class A { }";
-
-        final ParseResult<CompilationUnit> pr = new JavaParser().parse(testMethodBody);
-        final CompilationUnit cu = pr.getResult().get();
-
-        new Tokeniser().visit(cu, tokens);
-
-        assertThat(tokens).containsExactly(CLASS, ClassName.of("A"), STARTCLASS, ENDCLASS);
-    }
-
-    @Test
     void testMethodBlockContainingDefaultConstructor() {
         final List<IToken> tokens = new ArrayList<>();
         final String testFunction = "{ new A(); }";
@@ -62,29 +49,42 @@ class TokeniserTest {
     }
 
     @Test
-    void simpleClass() {
+    void simplestClass() {
         final List<IToken> tokens = new ArrayList<>();
-        final String testMethodBody = "public class A { A(){} }";
+        final String testMethodBody = "public class A { }";
 
         final ParseResult<CompilationUnit> pr = new JavaParser().parse(testMethodBody);
         final CompilationUnit cu = pr.getResult().get();
 
         new Tokeniser().visit(cu, tokens);
 
-        assertThat(tokens).containsExactly(PUBLIC, CLASS, ClassName.of("A"), STARTCLASS, FunctionName.of("A"), STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, STARTFUNCTION, ENDFUNCTION, ENDCLASS);
+        assertThat(tokens).containsExactly(PUBLIC, CLASS, ClassName.of("A"), STARTCLASS, ENDCLASS);
+    }
+
+    @Test
+    void simpleClass() {
+        final List<IToken> tokens = new ArrayList<>();
+        final String testMethodBody = "public class A { public A(){} }";
+
+        final ParseResult<CompilationUnit> pr = new JavaParser().parse(testMethodBody);
+        final CompilationUnit cu = pr.getResult().get();
+
+        new Tokeniser().visit(cu, tokens);
+
+        assertThat(tokens).containsExactly(PUBLIC, CLASS, ClassName.of("A"), STARTCLASS, PUBLIC, FunctionName.of("A"), STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, STARTFUNCTION, ENDFUNCTION, ENDCLASS);
     }
 
     @Test
     void simpleClassWithSimpleConstructor() {
         final List<IToken> tokens = new ArrayList<>();
-        final String testMethodBody = "public class A { A(){ final int i = 1;} }";
+        final String testMethodBody = "public class A { public A(){ final int i = 1;} }";
 
         final ParseResult<CompilationUnit> pr = new JavaParser().parse(testMethodBody);
         final CompilationUnit cu = pr.getResult().get();
 
         new Tokeniser().visit(cu, tokens);
 
-        assertThat(tokens).containsExactly(PUBLIC, CLASS, ClassName.of("A"), STARTCLASS, FunctionName.of("A"), STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, STARTFUNCTION, INT, Reference.of("i"), ASSIGNMENT, Value.of(1), ENDFUNCTION, ENDCLASS);
+        assertThat(tokens).containsExactly(PUBLIC, CLASS, ClassName.of("A"), STARTCLASS, PUBLIC, FunctionName.of("A"), STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, STARTFUNCTION, INT, Reference.of("i"), ASSIGNMENT, Value.of(1), ENDFUNCTION, ENDCLASS);
     }
 
     //    @Test
