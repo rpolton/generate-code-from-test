@@ -2,9 +2,7 @@ package me.shaftesbury.codegenerator.tokeniser;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseResult;
-import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.stmt.BlockStmt;
 import me.shaftesbury.codegenerator.Reference;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +15,6 @@ import static me.shaftesbury.codegenerator.tokeniser.Token.ENDCLASS;
 import static me.shaftesbury.codegenerator.tokeniser.Token.ENDFUNCTION;
 import static me.shaftesbury.codegenerator.tokeniser.Token.ENDFUNCTIONPARAMETERS;
 import static me.shaftesbury.codegenerator.tokeniser.Token.INT;
-import static me.shaftesbury.codegenerator.tokeniser.Token.NEW;
 import static me.shaftesbury.codegenerator.tokeniser.Token.PUBLIC;
 import static me.shaftesbury.codegenerator.tokeniser.Token.STARTCLASS;
 import static me.shaftesbury.codegenerator.tokeniser.Token.STARTFUNCTION;
@@ -37,16 +34,16 @@ class TokeniserTest {
 //        assertThat(tokens).containsExactly(NEW, ClassName.of("A"));
 //    }
 
-    @Test
-    void testMethodBlockContainingDefaultConstructor() {
-        final List<IToken> tokens = new ArrayList<>();
-        final String testFunction = "{ new A(); }";
-        final BlockStmt bs = StaticJavaParser.parseBlock(testFunction);
-
-        new Tokeniser().visit(bs, tokens);
-
-        assertThat(tokens).containsExactly(NEW, ClassName.of("A"), STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS);
-    }
+//    @Test
+//    void testMethodBlockContainingDefaultConstructor() {
+//        final List<IToken> tokens = new ArrayList<>();
+//        final String testFunction = "{ new A(); }";
+//        final BlockStmt bs = StaticJavaParser.parseBlock(testFunction);
+//
+//        new Tokeniser().visit(bs, tokens);
+//
+//        assertThat(tokens).containsExactly(NEW, ClassName.of("A"), STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS);
+//    }
 
     @Test
     void simplestClass() {
