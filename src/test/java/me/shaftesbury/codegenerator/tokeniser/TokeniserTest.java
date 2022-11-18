@@ -11,14 +11,19 @@ import java.util.List;
 
 import static me.shaftesbury.codegenerator.tokeniser.Token.ASSIGNMENT;
 import static me.shaftesbury.codegenerator.tokeniser.Token.CLASS;
+import static me.shaftesbury.codegenerator.tokeniser.Token.DOT;
 import static me.shaftesbury.codegenerator.tokeniser.Token.ENDCLASS;
 import static me.shaftesbury.codegenerator.tokeniser.Token.ENDFUNCTION;
 import static me.shaftesbury.codegenerator.tokeniser.Token.ENDFUNCTIONPARAMETERS;
 import static me.shaftesbury.codegenerator.tokeniser.Token.INT;
+import static me.shaftesbury.codegenerator.tokeniser.Token.NEW;
 import static me.shaftesbury.codegenerator.tokeniser.Token.PUBLIC;
+import static me.shaftesbury.codegenerator.tokeniser.Token.SEMICOLON;
 import static me.shaftesbury.codegenerator.tokeniser.Token.STARTCLASS;
 import static me.shaftesbury.codegenerator.tokeniser.Token.STARTFUNCTION;
 import static me.shaftesbury.codegenerator.tokeniser.Token.STARTFUNCTIONPARAMETERS;
+import static me.shaftesbury.codegenerator.tokeniser.Token.TESTANNOTATION;
+import static me.shaftesbury.codegenerator.tokeniser.Token.VOIDRETURNTYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TokeniserTest {
@@ -97,17 +102,21 @@ class TokeniserTest {
 
     @Test
     void testFunctionContainingFunctionCall() {
-//        final String testFunction = "@Test void testFunction() { new A().doTheThing(); }";
-//        final java.util.List<IToken> expectedTokens = io.vavr.collection.List.of(TESTANNOTATION, VOIDRETURNTYPE, FunctionName.of("testFunction"),
-//                        STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, STARTFUNCTION, NEW, ClassName.of("A"),
-//                        STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, DOT, FunctionName.of("doTheThing"),
-//                        STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, SEMICOLON, ENDFUNCTION)
-//                .toJavaList();
-//        final Tokeniser tokeniser = new Tokeniser();
-//
-//        final Traversable<IToken> actualTokens = tokeniser.tokenise(testFunction);
-//
-//        assertThat(actualTokens.toJavaList()).containsExactlyElementsOf(expectedTokens);
+        final List<IToken> tokens = new ArrayList<>();
+        final String testClass = "public class ATest { @Test void testFunction() { new A().doTheThing(); }}";
+        final java.util.List<IToken> expectedTokens = io.vavr.collection.List.of(
+                        PUBLIC, CLASS, ClassName.of("ATest"), STARTCLASS,
+                        TESTANNOTATION, VOIDRETURNTYPE, FunctionName.of("testFunction"),
+                        STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, STARTFUNCTION, NEW, FunctionName.of("A"),
+                        STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, DOT, FunctionName.of("doTheThing"),
+                        STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, SEMICOLON, ENDFUNCTION, ENDCLASS)
+                .toJavaList();
+        final ParseResult<CompilationUnit> pr = new JavaParser().parse(testClass);
+        final CompilationUnit cu = pr.getResult().get();
+
+        new Tokeniser().visit(cu, tokens);
+
+        assertThat(tokens).containsExactlyElementsOf(expectedTokens);
     }
 }
 

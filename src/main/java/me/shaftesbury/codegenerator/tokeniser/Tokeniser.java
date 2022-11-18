@@ -123,9 +123,18 @@ import static me.shaftesbury.codegenerator.tokeniser.Token.PUBLIC;
 import static me.shaftesbury.codegenerator.tokeniser.Token.STARTCLASS;
 import static me.shaftesbury.codegenerator.tokeniser.Token.STARTFUNCTION;
 import static me.shaftesbury.codegenerator.tokeniser.Token.STARTFUNCTIONPARAMETERS;
+import static me.shaftesbury.codegenerator.tokeniser.Token.TESTANNOTATION;
+import static me.shaftesbury.codegenerator.tokeniser.Token.VOIDRETURNTYPE;
 
 public class Tokeniser extends VoidVisitorAdapter<List<IToken>> {
     private static class NameTokeniser extends VoidVisitorAdapter<StringBuilder> {
+        @Override
+        public void visit(final Name n, final StringBuilder arg) {
+            n.getQualifier().ifPresent(l -> l.accept(this, arg));
+            n.getComment().ifPresent(l -> l.accept(this, arg));
+            arg.append(n.getIdentifier());
+        }
+
         @Override
         public void visit(final SimpleName n, final StringBuilder arg) {
             n.getComment().ifPresent(l -> l.accept(this, arg));
@@ -139,7 +148,10 @@ public class Tokeniser extends VoidVisitorAdapter<List<IToken>> {
     public void visit(final AnnotationDeclaration n, final List<IToken> arg) {
         n.getMembers().forEach(p -> p.accept(this, arg));
         n.getModifiers().forEach(p -> p.accept(this, arg));
-        n.getName().accept(this, arg);
+        final StringBuilder name = new StringBuilder();
+        n.getName().accept(nameTokeniserFactory.get(), name);
+        if (name.toString().equals("Test"))
+            arg.add(TESTANNOTATION);
         n.getAnnotations().forEach(p -> p.accept(this, arg));
         n.getComment().ifPresent(l -> l.accept(this, arg));
     }
@@ -456,7 +468,10 @@ public class Tokeniser extends VoidVisitorAdapter<List<IToken>> {
 
     @Override
     public void visit(final MarkerAnnotationExpr n, final List<IToken> arg) {
-        n.getName().accept(this, arg);
+        final StringBuilder name = new StringBuilder();
+        n.getName().accept(nameTokeniserFactory.get(), name);
+        if ("Test".equals(name.toString()))
+            arg.add(TESTANNOTATION);
         n.getComment().ifPresent(l -> l.accept(this, arg));
     }
 
@@ -478,15 +493,20 @@ public class Tokeniser extends VoidVisitorAdapter<List<IToken>> {
 
     @Override
     public void visit(final MethodDeclaration n, final List<IToken> arg) {
-        n.getBody().ifPresent(l -> l.accept(this, arg));
+        n.getAnnotations().forEach(p -> p.accept(this, arg));
         n.getType().accept(this, arg);
-        n.getModifiers().forEach(p -> p.accept(this, arg));
-        n.getName().accept(this, arg);
+        final StringBuilder name = new StringBuilder();
+        n.getName().accept(nameTokeniserFactory.get(), name);
+        arg.addAll(List.of(FunctionName.of(name.toString()), STARTFUNCTIONPARAMETERS));
         n.getParameters().forEach(p -> p.accept(this, arg));
+        arg.add(ENDFUNCTIONPARAMETERS);
         n.getReceiverParameter().ifPresent(l -> l.accept(this, arg));
         n.getThrownExceptions().forEach(p -> p.accept(this, arg));
         n.getTypeParameters().forEach(p -> p.accept(this, arg));
-        n.getAnnotations().forEach(p -> p.accept(this, arg));
+        arg.add(STARTFUNCTION);
+        n.getBody().ifPresent(l -> l.accept(this, arg));
+        arg.add(ENDFUNCTION);
+        n.getModifiers().forEach(p -> p.accept(this, arg));
         n.getComment().ifPresent(l -> l.accept(this, arg));
     }
 
@@ -702,6 +722,7 @@ public class Tokeniser extends VoidVisitorAdapter<List<IToken>> {
 
     @Override
     public void visit(final VoidType n, final List<IToken> arg) {
+        arg.add(VOIDRETURNTYPE);
         n.getAnnotations().forEach(p -> p.accept(this, arg));
         n.getComment().ifPresent(l -> l.accept(this, arg));
     }
