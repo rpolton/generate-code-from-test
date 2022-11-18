@@ -106,10 +106,13 @@ import com.github.javaparser.ast.type.VoidType;
 import com.github.javaparser.ast.type.WildcardType;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.github.javaparser.metamodel.ObjectCreationExprMetaModel;
+import me.shaftesbury.codegenerator.Reference;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
+import static me.shaftesbury.codegenerator.tokeniser.Token.ASSIGNMENT;
 import static me.shaftesbury.codegenerator.tokeniser.Token.CLASS;
 import static me.shaftesbury.codegenerator.tokeniser.Token.ENDCLASS;
 import static me.shaftesbury.codegenerator.tokeniser.Token.ENDFUNCTION;
@@ -122,6 +125,16 @@ import static me.shaftesbury.codegenerator.tokeniser.Token.STARTFUNCTION;
 import static me.shaftesbury.codegenerator.tokeniser.Token.STARTFUNCTIONPARAMETERS;
 
 public class Tokeniser extends VoidVisitorAdapter<List<IToken>> {
+    private static class NameTokeniser extends VoidVisitorAdapter<StringBuilder> {
+        @Override
+        public void visit(final SimpleName n, final StringBuilder arg) {
+            n.getComment().ifPresent(l -> l.accept(this, arg));
+            arg.append(n.getIdentifier());
+        }
+    }
+
+    private final Supplier<NameTokeniser> nameTokeniserFactory = NameTokeniser::new;
+
     @Override
     public void visit(final AnnotationDeclaration n, final List<IToken> arg) {
         n.getMembers().forEach(p -> p.accept(this, arg));
@@ -237,7 +250,9 @@ public class Tokeniser extends VoidVisitorAdapter<List<IToken>> {
         n.getTypeParameters().forEach(p -> p.accept(this, arg));
         n.getModifiers().forEach(p -> p.accept(this, arg));
         arg.add(CLASS);
-        n.getName().accept(this, arg);
+        final StringBuilder name = new StringBuilder();
+        n.getName().accept(nameTokeniserFactory.get(), name);
+        arg.add(ClassName.of(name.toString()));
         arg.addAll(List.of(STARTCLASS));
         n.getMembers().forEach(p -> p.accept(this, arg));
         n.getAnnotations().forEach(p -> p.accept(this, arg));
@@ -274,8 +289,9 @@ public class Tokeniser extends VoidVisitorAdapter<List<IToken>> {
     @Override
     public void visit(final ConstructorDeclaration n, final List<IToken> arg) {
         n.getModifiers().forEach(m -> m.accept(this, arg));
-        arg.addAll(List.of(FunctionName.of(n.getNameAsString()), STARTFUNCTIONPARAMETERS));
-//        n.getName().accept(this, arg);
+        final StringBuilder name = new StringBuilder();
+        n.getName().accept(nameTokeniserFactory.get(), name);
+        arg.addAll(List.of(FunctionName.of(name.toString()), STARTFUNCTIONPARAMETERS));
 
         n.getTypeParameters().forEach(p -> p.accept(this, arg));
 
@@ -412,6 +428,7 @@ public class Tokeniser extends VoidVisitorAdapter<List<IToken>> {
 
     @Override
     public void visit(final IntegerLiteralExpr n, final List<IToken> arg) {
+        arg.addAll(List.of(ASSIGNMENT, Value.of(n.asNumber().intValue())));
         n.getComment().ifPresent(l -> l.accept(this, arg));
     }
 
@@ -537,7 +554,6 @@ public class Tokeniser extends VoidVisitorAdapter<List<IToken>> {
     @Override
     public void visit(final SimpleName n, final List<IToken> arg) {
         n.getComment().ifPresent(l -> l.accept(this, arg));
-        arg.add(ClassName.of(n.getIdentifier().toString()));
     }
 
     @Override
@@ -677,7 +693,9 @@ public class Tokeniser extends VoidVisitorAdapter<List<IToken>> {
     @Override
     public void visit(final VariableDeclarator n, final List<IToken> arg) {
         n.getType().accept(this, arg);
-        n.getName().accept(this, arg);
+        final StringBuilder name = new StringBuilder();
+        n.getName().accept(nameTokeniserFactory.get(), name);
+        arg.add(Reference.of(name.toString()));
         n.getInitializer().ifPresent(l -> l.accept(this, arg));
         n.getComment().ifPresent(l -> l.accept(this, arg));
     }
