@@ -3,7 +3,7 @@ package me.shaftesbury.codegenerator.tokeniser;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
-import io.vavr.collection.Traversable;
+import io.vavr.collection.Seq;
 import me.shaftesbury.codegenerator.Reference;
 import me.shaftesbury.codegenerator.model.ITestMethod;
 
@@ -11,16 +11,16 @@ import static me.shaftesbury.codegenerator.tokeniser.Token.CLASS;
 
 public class ManualTokeniser implements ITokeniser {
     @Override
-    public Traversable<IToken> tokenise(final String text) {
+    public Seq<IToken> tokenise(final String text) {
         return tokenise(text, List.empty());
     }
 
     @Override
-    public Traversable<IToken> tokenise(final ITestMethod testMethod) {
+    public Seq<IToken> tokenise(final ITestMethod testMethod) {
         return tokenise(testMethod.getMethod().getBody(), List.empty());
     }
 
-    private Traversable<IToken> tokenise(final String body, final List<IToken> tokens) {
+    private Seq<IToken> tokenise(final String body, final List<IToken> tokens) {
         if (body.isEmpty())
             return tokens.reverse();
 

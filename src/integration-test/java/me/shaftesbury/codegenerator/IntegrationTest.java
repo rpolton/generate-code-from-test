@@ -75,5 +75,4 @@ public class IntegrationTest {
                 .map(List::ofAll)
                 .in(TestMethod.TestMethodFactory::create);
     }
-
 }

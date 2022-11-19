@@ -14,15 +14,19 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <assertj-core.version>3.23.1</assertj-core.version>
+        <assertj-vavr.version>0.4.2</assertj-vavr.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <cucumber.version>7.9.0</cucumber.version>
         <functional-utils-java.version>2.0-SNAPSHOT</functional-utils-java.version>
+        <javaparser.version>3.24.7</javaparser.version>
         <junit-bom.version>5.9.1</junit-bom.version>
         <mockito.version>4.8.1</mockito.version>
         <vavr.version>1.0.0-alpha-4</vavr.version>
 
+        <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version>
+        <maven-failsafe-plugin.version>3.0.0-M7</maven-failsafe-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
     </properties>
 
@@ -49,7 +53,7 @@
         <dependency>
             <groupId>com.github.javaparser</groupId>
             <artifactId>javaparser-symbol-solver-core</artifactId>
-            <version>3.24.7</version>
+            <version>${javaparser.version}</version>
         </dependency>
         <dependency>
             <groupId>io.vavr</groupId>
@@ -66,6 +70,11 @@
             <artifactId>assertj-core</artifactId>
             <version>${assertj-core.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-vavr</artifactId>
+            <version>${assertj-vavr.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -136,6 +145,36 @@
                     <target>${java.version}</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>${build-helper-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>add-test-source</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/acceptance-test/java</source>
+                                <source>src/integration-test/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--            <plugin>-->
+            <!--                <groupId>org.apache.maven.plugins</groupId>-->
+            <!--                <artifactId>maven-failsafe-plugin</artifactId>-->
+            <!--                <version>${maven-failsafe-plugin.version}</version>-->
+            <!--            </plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
             </plugin>
         </plugins>
     </build>

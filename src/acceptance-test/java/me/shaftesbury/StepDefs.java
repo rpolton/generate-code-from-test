@@ -1,5 +1,6 @@
 package me.shaftesbury;
 
+import com.github.javaparser.JavaParser;
 import io.cucumber.java8.En;
 import io.vavr.collection.List;
 import me.shaftesbury.codegenerator.ClassTransformer;
@@ -10,6 +11,8 @@ import me.shaftesbury.codegenerator.Result;
 import me.shaftesbury.codegenerator.model.ITestMethod;
 import me.shaftesbury.codegenerator.model.TestMethod;
 import me.shaftesbury.codegenerator.tokeniser.ITokeniser;
+import me.shaftesbury.codegenerator.tokeniser.Tokeniser;
+import me.shaftesbury.codegenerator.tokeniser.TokeniserImpl;
 
 import java.util.Arrays;
 import java.util.function.Function;
@@ -21,7 +24,7 @@ import static org.mockito.Mockito.mock;
 public class StepDefs implements En {
 
     private static final ClassTransformer classTransformer = new ClassTransformer();
-    private static ITokeniser tokeniser = mock(ITokeniser.class);
+    private static ITokeniser tokeniser = new Tokeniser(text -> new JavaParser().parse(text).getResult().get(), new TokeniserImpl());
     private ITestMethod testMethod;
     private final ExecutionContext.Factory executionContextFactory = new ExecutionContext.Factory();
     private IExecutionContext executionContext;

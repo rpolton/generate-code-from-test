@@ -1,10 +1,10 @@
 package me.shaftesbury.codegenerator.tokeniser;
 
-import io.vavr.collection.Traversable;
+import io.vavr.collection.Seq;
 import me.shaftesbury.codegenerator.model.ITestMethod;
 
 public interface ITokeniser {
-    Traversable<IToken> tokenise(String text);
+    Seq<IToken> tokenise(String text);
 
-    Traversable<IToken> tokenise(ITestMethod testMethod);
+    Seq<IToken> tokenise(ITestMethod testMethod);
 }
