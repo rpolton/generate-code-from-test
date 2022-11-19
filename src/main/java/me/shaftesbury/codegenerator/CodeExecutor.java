@@ -1,8 +1,7 @@
 package me.shaftesbury.codegenerator;
 
-import io.vavr.collection.Traversable;
+import io.vavr.collection.Seq;
 import me.shaftesbury.codegenerator.model.ILogicalClass;
-import me.shaftesbury.codegenerator.model.ITestMethod;
 
 import java.util.function.Function;
 
@@ -13,12 +12,12 @@ public class CodeExecutor {
         this.codeGeneratorFactory = codeGeneratorFactory;
     }
 
-    public Execution execute(final ITestMethod testMethod) {
+    public Execution execute(final String testClass) {
         return executionContext -> {
             final ICodeGenerator codeGenerator = codeGeneratorFactory.apply(executionContext);
-            final Traversable<ILogicalClass> classes = codeGenerator.generateCode(testMethod);
+            final Seq<ILogicalClass> classes = codeGenerator.generateCodeSatisfying(testClass);
             final IExecutionContext newContext = new ExecutionContextExtender(executionContext).with(classes);
-            return testMethod.execute(newContext);
+            return null;//testMethod.execute(newContext);
         };
     }
 

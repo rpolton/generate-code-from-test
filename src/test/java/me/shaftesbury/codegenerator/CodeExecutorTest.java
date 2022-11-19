@@ -1,6 +1,5 @@
 package me.shaftesbury.codegenerator;
 
-import me.shaftesbury.codegenerator.model.ITestMethod;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -19,43 +18,49 @@ class CodeExecutorTest {
     }
 
     @Test
-    void executeTestMethodReturnsErrorResult(@Mock final ITestMethod testMethod, @Mock final IExecutionContext execContext, @Mock final CodeGenerator codeGenerator) {
+    void executeTestMethodReturnsErrorResult(@Mock final IExecutionContext execContext, @Mock final CodeGenerator codeGenerator) {
         final CodeExecutor codeExecutor = new CodeExecutor(ec -> codeGenerator);
+        final String testMethod = "";
         final Result result = codeExecutor.execute(testMethod).inContext(execContext);
         assertThat(result).extracting(Result::isError).isEqualTo(true);
     }
 
     @Test
-    void executeTestMethodReturnsNonErrorResult(@Mock final ITestMethod testMethod, @Mock final IExecutionContext execContext, @Mock final CodeGenerator codeGenerator) {
+    void executeTestMethodReturnsNonErrorResult(@Mock final IExecutionContext execContext, @Mock final CodeGenerator codeGenerator) {
         final CodeExecutor codeExecutor = new CodeExecutor(ec -> codeGenerator);
+        final String testMethod = "";
         final Result result = codeExecutor.execute(testMethod).inContext(execContext);
         assertThat(result).extracting(Result::isError).isEqualTo(false);
     }
 
     @Test
-    void executeTestMethodReturnsResultContainingValue(@Mock final ITestMethod testMethod, @Mock final IExecutionContext execContext, @Mock final CodeGenerator codeGenerator, @Mock final Object expectedValue) {
+    void executeTestMethodReturnsResultContainingValue(@Mock final IExecutionContext execContext, @Mock final CodeGenerator codeGenerator, @Mock final Object expectedValue) {
         final CodeExecutor codeExecutor = new CodeExecutor(ec -> codeGenerator);
+        final String testMethod = "";
         final Result result = codeExecutor.execute(testMethod).inContext(execContext);
         assertThat(result).extracting(Result::getValue).isEqualTo(expectedValue);
     }
 
     @Test
-    void executeTestMethodReturnsResultWithCodeIdentifier(@Mock final ITestMethod testMethod, @Mock final IExecutionContext execContext, @Mock final CodeGenerator codeGenerator) {
+    void executeTestMethodReturnsResultWithCodeIdentifier(@Mock final IExecutionContext execContext, @Mock final CodeGenerator codeGenerator) {
         final CodeExecutor codeExecutor = new CodeExecutor(ec -> codeGenerator);
+        final String testMethod = "";
         final Result result = codeExecutor.execute(testMethod).inContext(execContext);
         assertThat(result).extracting(Result::isCode).isEqualTo(true);
     }
 
     @Test
-    void executeTestMethodReturnsResultWithoutCodeIdentifier(@Mock final ITestMethod testMethod, @Mock final IExecutionContext execContext, @Mock final CodeGenerator codeGenerator) {
+    void executeTestMethodReturnsResultWithoutCodeIdentifier(@Mock final IExecutionContext execContext, @Mock final CodeGenerator codeGenerator) {
         final CodeExecutor codeExecutor = new CodeExecutor(ec -> codeGenerator);
+        final String testMethod = "";
         final Result result = codeExecutor.execute(testMethod).inContext(execContext);
         assertThat(result).extracting(Result::isCode).isEqualTo(false);
     }
 
     @Test
-    void executeTestMethodReturnsResultContainingCode(@Mock final ITestMethod testMethod, @Mock final IExecutionContext execContext, @Mock final CodeGenerator codeGenerator, @Mock final Object code) {
+    void executeTestMethodReturnsResultContainingCode(@Mock final IExecutionContext execContext, @Mock final CodeGenerator codeGenerator, @Mock final Object code) {
         final CodeExecutor codeExecutor = new CodeExecutor(ec -> codeGenerator);
+        final String testMethod = "";
         final Result result = codeExecutor.execute(testMethod).inContext(execContext);
         assertThat(result).extracting(Result::getCode).isEqualTo(code);
     }

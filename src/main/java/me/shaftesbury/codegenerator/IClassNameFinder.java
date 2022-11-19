@@ -1,6 +1,6 @@
 package me.shaftesbury.codegenerator;
 
-import io.vavr.collection.Traversable;
+import io.vavr.collection.Seq;
 import me.shaftesbury.codegenerator.tokeniser.IToken;
 
 public interface IClassNameFinder {
@@ -10,5 +10,5 @@ public interface IClassNameFinder {
      * @param tokens
      * @return
      */
-    Traversable<IClassName> findConstructedClasses(Traversable<IToken> tokens);
+    Seq<IClassName> findConstructedClasses(Seq<IToken> tokens);
 }

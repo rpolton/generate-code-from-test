@@ -1,7 +1,7 @@
 package me.shaftesbury.codegenerator;
 
 import io.vavr.collection.List;
-import io.vavr.collection.Traversable;
+import io.vavr.collection.Seq;
 import me.shaftesbury.codegenerator.imported.RuntimeCompiler;
 import me.shaftesbury.codegenerator.model.IFunctionName;
 import me.shaftesbury.codegenerator.model.ILogicalClass;
@@ -11,7 +11,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import static java.util.Objects.isNull;
 
 public class ExecutionContext implements IExecutionContext {
-    private final Traversable<ILogicalClass> classes;
+    private final Seq<ILogicalClass> classes;
     private final RuntimeCompiler runtimeCompiler;
 
     private ExecutionContext(final Builder builder) {
@@ -19,7 +19,7 @@ public class ExecutionContext implements IExecutionContext {
         runtimeCompiler = builder.runtimeCompiler;
     }
 
-    public Traversable<ILogicalClass> getClasses() {
+    public Seq<ILogicalClass> getClasses() {
         return classes;
     }
 
@@ -28,7 +28,7 @@ public class ExecutionContext implements IExecutionContext {
     }
 
     @Override
-    public boolean allFunctionsAreInTheContext(final IClassName iClassName, final Traversable<IFunctionName> iFunctionNames) {
+    public boolean allFunctionsAreInTheContext(final IClassName iClassName, final Seq<IFunctionName> iFunctionNames) {
         return classIsInTheContext(iClassName) && functionsAreInTheClass(classes.filter(cls -> cls.getName().equals(iClassName)), iFunctionNames);
     }
 
@@ -41,7 +41,7 @@ public class ExecutionContext implements IExecutionContext {
         return classes.map(ILogicalClass::getName).contains(iClassName);
     }
 
-    private boolean functionsAreInTheClass(final Traversable<ILogicalClass> classes, final Traversable<IFunctionName> functionNames) {
+    private boolean functionsAreInTheClass(final Seq<ILogicalClass> classes, final Seq<IFunctionName> functionNames) {
         return classes.filter(cls -> cls.getMethods().map(ILogicalFunction::getName).containsAll(functionNames)).containsAll(classes);
     }
 
@@ -80,15 +80,15 @@ public class ExecutionContext implements IExecutionContext {
     }
 
     public static class Builder {
-        private Traversable<ILogicalClass> context;
-        private Traversable<ILogicalClass> additionalClasses = List.empty();
+        private Seq<ILogicalClass> context;
+        private Seq<ILogicalClass> additionalClasses = List.empty();
         private RuntimeCompiler runtimeCompiler;
 
         public static Builder from(final IExecutionContext executionContext) {
             return builder().withCompiler(executionContext.getRuntimeCompiler()).withContext(executionContext.getClasses());
         }
 
-        public Builder withContext(final Traversable<ILogicalClass> context) {
+        public Builder withContext(final Seq<ILogicalClass> context) {
             this.context = context;
             return this;
         }
@@ -98,7 +98,7 @@ public class ExecutionContext implements IExecutionContext {
             return this;
         }
 
-        public Builder withAdditionalClasses(final Traversable<ILogicalClass> classes) {
+        public Builder withAdditionalClasses(final Seq<ILogicalClass> classes) {
             this.additionalClasses = classes;
             return this;
         }

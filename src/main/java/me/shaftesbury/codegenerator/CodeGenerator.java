@@ -1,10 +1,9 @@
 package me.shaftesbury.codegenerator;
 
 import io.vavr.collection.Map;
-import io.vavr.collection.Traversable;
+import io.vavr.collection.Seq;
 import me.shaftesbury.codegenerator.model.IFunctionName;
 import me.shaftesbury.codegenerator.model.ILogicalClass;
-import me.shaftesbury.codegenerator.model.ITestMethod;
 import me.shaftesbury.codegenerator.tokeniser.IToken;
 import me.shaftesbury.codegenerator.tokeniser.ITokeniser;
 
@@ -25,7 +24,7 @@ public class CodeGenerator implements ICodeGenerator {
         partialCodeGeneratorFactory = builder.partialCodeGenerator;
     }
 
-//    private Option<Exception> tryAgain(final Traversable<ILogicalClass> classes) {
+//    private Option<Exception> tryAgain(final Seq<ILogicalClass> classes) {
 //        final IExecutionContext newExecutionContext = ExecutionContext.Builder.from(executionContext)
 //                .withAdditionalClasses(classes)
 //                .build();
@@ -71,21 +70,21 @@ public class CodeGenerator implements ICodeGenerator {
     }
 
     @Override
-    public Traversable<ILogicalClass> generateCode(final ITestMethod testMethod) {
+    public Seq<ILogicalClass> generateCodeSatisfying(final String testClass) {
         final PartialCodeGenerator partialCodeGenerator = partialCodeGeneratorFactory.get();
         final ITokeniser tokeniser = tokeniserFactory.get();
         final IClassNameFinder classNameFinder = classNameFinderFactory.get();
         final IFunctionNameFinder functionNameFinder = functionNameFinderFactory.get();
 
-//        final Traversable<ILogicalClass> classesInContext = executionContext.getClasses();
-//        final Traversable<IClassName> classNamesInContext = classesInContext.map(ILogicalClass::getName);
+//        final Seq<ILogicalClass> classesInContext = executionContext.getClasses();
+//        final Seq<IClassName> classNamesInContext = classesInContext.map(ILogicalClass::getName);
 
-        final Traversable<IToken> tokens = tokeniser.tokenise(testMethod);
-        final Traversable<IClassName> classesUsedInTestMethod = classNameFinder.findConstructedClasses(tokens);
-        final Traversable<PartialClass> constructorsForClassesUsedInTestMethod = partialCodeGenerator.generateConstructorCodeForClasses(classesUsedInTestMethod);
-//        final Traversable<IClassName> classNamesUsedInTestNotAlreadyInContext = classesUsedInTestMethod.filterNot(classNamesInContext::contains);
+        final Seq<IToken> tokens = tokeniser.tokenise(testClass);
+        final Seq<? extends IClassName> classesUsedInTestMethod = classNameFinder.findConstructedClasses(tokens);
+        final Seq<PartialClass> constructorsForClassesUsedInTestMethod = partialCodeGenerator.generateConstructorCodeForClasses(classesUsedInTestMethod);
+//        final Seq<IClassName> classNamesUsedInTestNotAlreadyInContext = classesUsedInTestMethod.filterNot(classNamesInContext::contains);
 
-        final Map<IClassName, ? extends Traversable<IFunctionName>> classAndFnsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
+        final Map<IClassName, ? extends Seq<IFunctionName>> classAndFnsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
         return classAndFnsUsedInTest
                 .map(partialCodeGenerator.initialisePartialClass(constructorsForClassesUsedInTestMethod))
                 .map(t -> partialCodeGenerator.generateCodeForClass(t._1, t._2))

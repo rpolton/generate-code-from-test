@@ -1,19 +1,19 @@
 package me.shaftesbury.codegenerator.tokeniser;
 
-import com.github.javaparser.ast.CompilationUnit;
 import io.vavr.collection.Seq;
 import me.shaftesbury.codegenerator.model.ITestMethod;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class Tokeniser implements ITokeniser {
 
     private final Function<String, CompilationUnit> javaParser;
-    private final TokeniserImpl tokeniserImpl;
+    private final Supplier<TokeniserImpl> tokeniserImpl;
 
-    public Tokeniser(final Function<String, CompilationUnit> javaParser, final TokeniserImpl tokeniserImpl) {
+    public Tokeniser(final Function<String, CompilationUnit> javaParser, final Supplier<TokeniserImpl> tokeniserImpl) {
         this.javaParser = javaParser;
         this.tokeniserImpl = tokeniserImpl;
     }
@@ -23,7 +23,7 @@ public class Tokeniser implements ITokeniser {
         final CompilationUnit cu = javaParser.apply(text);
 
         final List<IToken> tokens = new ArrayList<>();
-        tokeniserImpl.visit(cu, tokens);
+        tokeniserImpl.get().visit(cu.getCU(), tokens);
 
         return io.vavr.collection.List.ofAll(tokens);
     }

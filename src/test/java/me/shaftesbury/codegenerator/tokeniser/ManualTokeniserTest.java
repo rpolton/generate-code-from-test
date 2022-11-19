@@ -1,7 +1,7 @@
 package me.shaftesbury.codegenerator.tokeniser;
 
 import io.vavr.collection.List;
-import io.vavr.collection.Traversable;
+import io.vavr.collection.Seq;
 import me.shaftesbury.codegenerator.Reference;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class ManualTokeniserTest {
 
         final ITokeniser tokeniser = new ManualTokeniser();
 
-        final Traversable<IToken> tokens = tokeniser.tokenise(testMethodBody);
+        final Seq<IToken> tokens = tokeniser.tokenise(testMethodBody);
 
         assertThat(tokens.toJavaList()).containsExactly(NEW, ClassName.of("A"), STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS);
     }
@@ -42,7 +42,7 @@ class ManualTokeniserTest {
 
         final ITokeniser tokeniser = new ManualTokeniser();
 
-        final Traversable<IToken> tokens = tokeniser.tokenise(testMethodBody);
+        final Seq<IToken> tokens = tokeniser.tokenise(testMethodBody);
 
         assertThat(tokens.toJavaList()).containsExactly(CLASS, ClassName.of("A"), STARTCLASS, ENDCLASS);
     }
@@ -53,7 +53,7 @@ class ManualTokeniserTest {
 
         final ITokeniser tokeniser = new ManualTokeniser();
 
-        final Traversable<IToken> tokens = tokeniser.tokenise(testMethodBody);
+        final Seq<IToken> tokens = tokeniser.tokenise(testMethodBody);
 
         assertThat(tokens.toJavaList()).containsExactly(FINAL, INT, Reference.of("a"), ASSIGNMENT, Value.of(10), SEMICOLON);
     }
@@ -67,7 +67,7 @@ class ManualTokeniserTest {
                 .toJavaList();
         final ManualTokeniser tokeniser = new ManualTokeniser();
 
-        final Traversable<IToken> actualTokens = tokeniser.tokenise(testFunction);
+        final Seq<IToken> actualTokens = tokeniser.tokenise(testFunction);
 
         assertThat(actualTokens.toJavaList()).containsExactlyElementsOf(expectedTokens);
     }
@@ -82,7 +82,7 @@ class ManualTokeniserTest {
                 .toJavaList();
         final ManualTokeniser tokeniser = new ManualTokeniser();
 
-        final Traversable<IToken> actualTokens = tokeniser.tokenise(testFunction);
+        final Seq<IToken> actualTokens = tokeniser.tokenise(testFunction);
 
         assertThat(actualTokens.toJavaList()).containsExactlyElementsOf(expectedTokens);
     }

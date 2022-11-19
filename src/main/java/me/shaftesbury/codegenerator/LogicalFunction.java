@@ -1,7 +1,7 @@
 package me.shaftesbury.codegenerator;
 
 import io.vavr.collection.List;
-import io.vavr.collection.Traversable;
+import io.vavr.collection.Seq;
 import me.shaftesbury.codegenerator.model.IFunctionName;
 import me.shaftesbury.codegenerator.tokeniser.IToken;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -33,7 +33,7 @@ public class LogicalFunction implements ILogicalFunction {
     }
 
     @Override
-    public Traversable<IFunctionParameter> getParameters() {
+    public Seq<IFunctionParameter> getParameters() {
         return parameters;
     }
 

@@ -2,7 +2,7 @@ package me.shaftesbury.codegenerator;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import io.vavr.collection.Traversable;
+import io.vavr.collection.Seq;
 import me.shaftesbury.codegenerator.model.Constructor;
 import me.shaftesbury.codegenerator.model.IConstructor;
 import me.shaftesbury.codegenerator.model.IFunctionName;
@@ -25,23 +25,23 @@ import static me.shaftesbury.codegenerator.tokeniser.Token.STARTFIELDS;
 import static me.shaftesbury.codegenerator.tokeniser.Token.STARTFUNCTION;
 import static me.shaftesbury.codegenerator.tokeniser.Token.STARTFUNCTIONPARAMETERS;
 
-public class ClassTransformer implements ITransformer<Traversable<IToken>, ILogicalClass> {
+public class ClassTransformer implements ITransformer<Seq<IToken>, ILogicalClass> {
 
-    public ILogicalClass transform(final Traversable<IToken> tokens) {
+    public ILogicalClass transform(final Seq<IToken> tokens) {
         requireNonNull(tokens, "tokens must not be null");
 //        final Option<IClassName> classNameToken = tokens.find(t -> t instanceof ClassName).map(t -> (ClassName) t);
 //        if(tokens.find(t -> t instanceof FunctionName).isDefined()) {
-//            final Traversable<IToken> fromStartOfFunction = tokens.dropUntil(t -> t instanceof FunctionName);
+//            final Seq<IToken> fromStartOfFunction = tokens.dropUntil(t -> t instanceof FunctionName);
 //        }
 //        tokens.fold ... reduce the tokens to a LogicalClass
 //        return classNameToken.map(LogicalClass::of).getOrElse((ILogicalClass) null);
         return reducer(tokens, LogicalClass.builder());
     }
 
-    private ILogicalClass reducer(final Traversable<IToken> tokens, final LogicalClass.Builder builder) {
+    private ILogicalClass reducer(final Seq<IToken> tokens, final LogicalClass.Builder builder) {
         if (tokens.isEmpty()) return builder.build();
         final IToken token = tokens.head();
-        final Traversable<IToken> tail = tokens.tail();
+        final Seq<IToken> tail = tokens.tail();
         if (PUBLIC.equals(token)) {
             return reducer(tail, builder);
         } else if (CLASS.equals(token)) {
@@ -49,10 +49,10 @@ public class ClassTransformer implements ITransformer<Traversable<IToken>, ILogi
         } else return reducer(tail, builder);
     }
 
-    private ILogicalClass reducer_class(final Traversable<IToken> tokens, final LogicalClass.Builder builder) {
+    private ILogicalClass reducer_class(final Seq<IToken> tokens, final LogicalClass.Builder builder) {
         if (tokens.isEmpty()) return builder.build();
         final IToken token = tokens.head();
-        final Traversable<IToken> tail = tokens.tail();
+        final Seq<IToken> tail = tokens.tail();
         if (STARTCLASS.equals(token)) {
             return reducer_class(tail, builder);
         } else if (token instanceof IClassName) {
@@ -60,10 +60,10 @@ public class ClassTransformer implements ITransformer<Traversable<IToken>, ILogi
         } else if (PUBLIC.equals(token)) {
             return reducer_class(tail, builder);
         } else if (token instanceof IFunctionName) {
-            final Tuple2<Traversable<IToken>, IConstructor> t = reducer_constructor(tail, Constructor.builder());
+            final Tuple2<Seq<IToken>, IConstructor> t = reducer_constructor(tail, Constructor.builder());
             return reducer_class(t._1, builder.withConstructor(t._2));
         } else if (STARTFIELDS.equals(token)) {
-            final Tuple2<Traversable<IToken>, Fields> t = reducer_fields(tail, Fields.builder());
+            final Tuple2<Seq<IToken>, Fields> t = reducer_fields(tail, Fields.builder());
             return reducer_class(t._1, builder.withFields(t._2));
         } else if (ENDCLASS.equals(token)) {
             return builder.build();
@@ -71,19 +71,19 @@ public class ClassTransformer implements ITransformer<Traversable<IToken>, ILogi
         return builder.build();
     }
 
-    private Tuple2<Traversable<IToken>, Fields> reducer_fields(final Traversable<IToken> tokens, final Fields.Builder builder) {
+    private Tuple2<Seq<IToken>, Fields> reducer_fields(final Seq<IToken> tokens, final Fields.Builder builder) {
         if (tokens.isEmpty()) return Tuple.of(tokens, builder.build());
         final IToken token = tokens.head();
-        final Traversable<IToken> tail = tokens.tail();
+        final Seq<IToken> tail = tokens.tail();
         if (PRIVATE.equals(token)) {
             final IToken token2 = tail.head();
-            final Traversable<IToken> tail2 = tail.tail();
+            final Seq<IToken> tail2 = tail.tail();
             if (FINAL.equals(token2)) {
                 final IToken token3 = tail2.head();
-                final Traversable<IToken> tail3 = tail2.tail();
+                final Seq<IToken> tail3 = tail2.tail();
                 if (INT.equals(token3)) {
                     final IToken token4 = tail3.head();
-                    final Traversable<IToken> tail4 = tail3.tail();
+                    final Seq<IToken> tail4 = tail3.tail();
                     if (token4 instanceof Reference) {
                         return reducer_fields(tail4, builder.withField(Field.builder().withAccess(TokenToAccessConverter.convert(PRIVATE)).withType(Type.INT).withName(((Reference) token4).getName()).build()));
                     }
@@ -97,28 +97,28 @@ public class ClassTransformer implements ITransformer<Traversable<IToken>, ILogi
         return Tuple.of(tail, builder.build());
     }
 
-    private Tuple2<Traversable<IToken>, IConstructor> reducer_constructor(final Traversable<IToken> tokens, final Constructor.Builder builder) {
+    private Tuple2<Seq<IToken>, IConstructor> reducer_constructor(final Seq<IToken> tokens, final Constructor.Builder builder) {
         if (tokens.isEmpty()) return Tuple.of(tokens, builder.build());
         final IToken token = tokens.head();
-        final Traversable<IToken> tail = tokens.tail();
+        final Seq<IToken> tail = tokens.tail();
         if (STARTFUNCTIONPARAMETERS.equals(token)) {
-            final Tuple2<Traversable<IToken>, ParameterList> t = reducer_functionParameters(tail, ParameterList.builder());
+            final Tuple2<Seq<IToken>, ParameterList> t = reducer_functionParameters(tail, ParameterList.builder());
             return reducer_constructor(t._1, builder.withParameters(t._2));
         } else if (STARTFUNCTION.equals(token)) {
-            final Tuple2<Traversable<IToken>, FunctionBody> t = reducer_function(tail, FunctionBody.builder());
+            final Tuple2<Seq<IToken>, FunctionBody> t = reducer_function(tail, FunctionBody.builder());
             return reducer_constructor(t._1, builder.withBody(t._2));
         }
         return Tuple.of(tokens, builder.build());
     }
 
-    private Tuple2<Traversable<IToken>, ParameterList> reducer_functionParameters(final Traversable<IToken> tokens, final ParameterList.Builder builder) {
+    private Tuple2<Seq<IToken>, ParameterList> reducer_functionParameters(final Seq<IToken> tokens, final ParameterList.Builder builder) {
         if (tokens.isEmpty()) return Tuple.of(tokens, builder.build());
         final IToken token = tokens.head();
-        final Traversable<IToken> tail = tokens.tail();
+        final Seq<IToken> tail = tokens.tail();
         if (INT.equals(token)) {
 //            return reducer_functionParameters(tail, builder.with)
             final IToken token2 = tail.head();
-            final Traversable<IToken> tail2 = tail.tail();
+            final Seq<IToken> tail2 = tail.tail();
             if (token2 instanceof Reference) {
                 final Reference reference = (Reference) token2;
                 final String name = reference.getName();
@@ -130,10 +130,10 @@ public class ClassTransformer implements ITransformer<Traversable<IToken>, ILogi
         return null;
     }
 
-    private Tuple2<Traversable<IToken>, FunctionBody> reducer_function(final Traversable<IToken> tokens, final FunctionBody.Builder builder) {
+    private Tuple2<Seq<IToken>, FunctionBody> reducer_function(final Seq<IToken> tokens, final FunctionBody.Builder builder) {
         if (tokens.isEmpty()) return Tuple.of(tokens, builder.build());
         final IToken token = tokens.head();
-        final Traversable<IToken> tail = tokens.tail();
+        final Seq<IToken> tail = tokens.tail();
         if (ENDFUNCTION.equals(token)) {
             return Tuple.of(tokens, builder.build());
         } else {

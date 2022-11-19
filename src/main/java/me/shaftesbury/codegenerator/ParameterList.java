@@ -1,13 +1,13 @@
 package me.shaftesbury.codegenerator;
 
 import io.vavr.collection.List;
-import io.vavr.collection.Traversable;
+import io.vavr.collection.Seq;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class ParameterList {
-    private final Traversable<IFunctionParameter> parameters;
+    private final Seq<IFunctionParameter> parameters;
 
     public ParameterList() {
         parameters = List.empty();
@@ -21,7 +21,7 @@ public class ParameterList {
         return new Builder();
     }
 
-    public Traversable<IFunctionParameter> getParameters() {
+    public Seq<IFunctionParameter> getParameters() {
         return parameters;
     }
 

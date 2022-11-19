@@ -1,7 +1,7 @@
 package me.shaftesbury.codegenerator;
 
 import io.vavr.collection.List;
-import io.vavr.collection.Traversable;
+import io.vavr.collection.Seq;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -21,7 +21,7 @@ class PartialCodeGeneratorTest {
         when(partialClassFactory.create(className)).thenReturn(partialClass);
         final PartialCodeGenerator generator = new PartialCodeGenerator(partialClassFactory);
 
-        final Traversable<PartialClass> partialClasses = generator.generateConstructorCodeForClasses(List.of(className));
+        final Seq<PartialClass> partialClasses = generator.generateConstructorCodeForClasses(List.of(className));
 
         assertThat(partialClasses).containsExactly(partialClass);
     }

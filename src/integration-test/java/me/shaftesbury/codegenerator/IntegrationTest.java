@@ -1,13 +1,9 @@
 package me.shaftesbury.codegenerator;
 
-import io.vavr.collection.List;
-import me.shaftesbury.codegenerator.model.ITestMethod;
-import me.shaftesbury.codegenerator.model.TestMethod;
 import me.shaftesbury.codegenerator.tokeniser.ITokeniser;
 import me.shaftesbury.codegenerator.tokeniser.ManualTokeniser;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.function.Supplier;
 
 import static me.shaftesbury.utils.functional.UsingWrapper.using;
@@ -37,19 +33,21 @@ public class IntegrationTest {
 
     @Test
     void runATestWhenTheContextContainsTheClassCode() {
-        final String test =
-                "@Test " +
-                        "void test() { " +
-                        "    new A(); " +
+        final String testClass =
+                "class ATest {" +
+                        "    @Test" +
+                        "    void test() {" +
+                        "        new A();" +
+                        "    }" +
                         "}";
 
-        final ITestMethod testMethod = givenAUnitTest(test);
+//        final String testMethod = givenAUnitTest(testClass);
 
         final String existingContext = "public class A { }";
 
         final IExecutionContext executionContext = givenAnExecutionContextContainingTheClassDefinition(existingContext);
 
-        final Result result = whenTheTestIsRunInTheSuppliedContext(testMethod, executionContext);
+        final Result result = whenTheTestIsRunInTheSuppliedContext(testClass, executionContext);
 
         assertThatTheTestShouldExecuteWithoutErrors(result);
     }
@@ -58,7 +56,7 @@ public class IntegrationTest {
         assertThat(result).extracting(Result::isError, Result::getValue).containsExactly(false, "this is the expected output");
     }
 
-    private Result whenTheTestIsRunInTheSuppliedContext(final ITestMethod testMethod, final IExecutionContext executionContext) {
+    private Result whenTheTestIsRunInTheSuppliedContext(final String testMethod, final IExecutionContext executionContext) {
         return codeExecutor.execute(testMethod).inContext(executionContext);
     }
 
@@ -69,10 +67,10 @@ public class IntegrationTest {
                 .in(executionContextFactory::create);
     }
 
-    private TestMethod givenAUnitTest(final String test) {
-        return using(test.split(";" + System.lineSeparator()))
-                .map(Arrays::asList)
-                .map(List::ofAll)
-                .in(TestMethod.TestMethodFactory::create);
-    }
+//    private TestMethod givenAUnitTest(final String test) {
+//        return using(test.split(";" + System.lineSeparator()))
+//                .map(Arrays::asList)
+//                .map(List::ofAll)
+//                .in(TestMethod.TestMethodFactory::create);
+//    }
 }

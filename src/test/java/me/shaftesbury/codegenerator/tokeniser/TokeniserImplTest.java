@@ -95,7 +95,7 @@ class TokeniserImplTest {
 //
 //        final ITokeniser tokeniser = new Tokeniser();
 //
-//        final Traversable<IToken> tokens = tokeniser.tokenise(testMethodBody);
+//        final Seq<IToken> tokens = tokeniser.tokenise(testMethodBody);
 //
 //        assertThat(tokens.toJavaList()).containsExactly(FINAL, INT, Reference.of("a"), ASSIGNMENT, Value.of(10), SEMICOLON);
 //    }

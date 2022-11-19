@@ -1,6 +1,6 @@
 package me.shaftesbury.codegenerator;
 
-import io.vavr.collection.Traversable;
+import io.vavr.collection.Seq;
 import me.shaftesbury.codegenerator.model.ILogicalClass;
 import me.shaftesbury.codegenerator.model.ITestMethod;
 
@@ -22,7 +22,7 @@ public class ExecutionContextExtender implements IExecutionContextExtender {
         return null;
     }
 
-    public IExecutionContext with(final Traversable<ILogicalClass> classes) {
+    public IExecutionContext with(final Seq<ILogicalClass> classes) {
         return null;
     }
 }

@@ -2,7 +2,7 @@ package me.shaftesbury.codegenerator;
 
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
-import io.vavr.collection.Traversable;
+import io.vavr.collection.Seq;
 import me.shaftesbury.codegenerator.model.IFunctionName;
 import me.shaftesbury.codegenerator.tokeniser.ClassName;
 import me.shaftesbury.codegenerator.tokeniser.FunctionName;
@@ -26,9 +26,9 @@ class FunctionNameFinderTest {
         final FunctionNameFinder functionNameFinder = new FunctionNameFinder();
         final IClassName className = ClassName.of("A");
         final IFunctionName f = FunctionName.of("f");
-        final Traversable<IToken> tokens = List.of(f);
+        final Seq<IToken> tokens = List.of(f);
 
-//        final Map<IClassName, ? extends Traversable<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
+//        final Map<IClassName, ? extends Seq<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
 //
 //        assertThat(functionsUsedInTest).containsExactly(Tuple.of(className, List.of(f)));
     }
@@ -39,9 +39,9 @@ class FunctionNameFinderTest {
         final IClassName className = ClassName.of("A");
         final IFunctionName f1 = FunctionName.of("f");
         final IFunctionName f2 = FunctionName.of("g");
-        final Traversable<IToken> tokens = List.of(className, f1, DOT, f2);
+        final Seq<IToken> tokens = List.of(className, f1, DOT, f2);
 
-        final Map<IClassName, ? extends Traversable<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
+        final Map<IClassName, ? extends Seq<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
 
 //        assertThat(functionsUsedInTest).containsExactly(Tuple.of(className, List.of(f1, f2)));
     }
@@ -53,11 +53,11 @@ class FunctionNameFinderTest {
         final IClassName className2 = ClassName.of("B");
         final IFunctionName f1 = FunctionName.of("f");
         final IFunctionName f2 = FunctionName.of("g");
-        final Traversable<IToken> tokens = List.of(
+        final Seq<IToken> tokens = List.of(
                 className1, DOT, f1, STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, SEMICOLON,
                 className2, DOT, f2, STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, SEMICOLON);
 
-        final Map<IClassName, ? extends Traversable<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
+        final Map<IClassName, ? extends Seq<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
 
 //        assertThat(functionsUsedInTest).containsExactly(Tuple.of(className1, List.of(f1)), Tuple.of(className2, List.of(f2)));
     }
@@ -71,7 +71,7 @@ class FunctionNameFinderTest {
 
         final FunctionNameFinder functionNameFinder = new FunctionNameFinder();
 
-        final Map<IClassName, ? extends Traversable<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
+        final Map<IClassName, ? extends Seq<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
 
 //        assertThat(functionsUsedInTest).containsExactly(Tuple.of(className, List.of(doTheThing)));
     }
