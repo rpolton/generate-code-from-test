@@ -10,12 +10,9 @@ import me.shaftesbury.codegenerator.tokeniser.Token;
 import me.shaftesbury.codegenerator.tokeniser.Tokeniser;
 import me.shaftesbury.codegenerator.tokeniser.TokeniserImpl;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.vavr.api.VavrAssertions.assertThat;
 
-@ExtendWith(MockitoExtension.class)
 class CodeGeneratorIntegrationTest {
 
     private final Tokeniser tokeniser = new Tokeniser(CompilationUnit::new, TokeniserImpl::new);
