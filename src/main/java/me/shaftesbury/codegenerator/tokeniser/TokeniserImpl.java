@@ -544,7 +544,7 @@ public class TokeniserImpl extends VoidVisitorAdapter<List<IToken>> {
         final ObjectCreationExprMetaModel metaModel = n.getMetaModel();
         final Optional<NodeList<Type>> typeArguments = n.getTypeArguments();
 
-        arg.addAll(List.of(NEW, FunctionName.of(n.getType().getName().asString()), STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS));
+        arg.addAll(List.of(NEW, ClassName.of(n.getType().getName().asString()), STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS));
     }
 
     @Override

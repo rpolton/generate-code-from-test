@@ -1,5 +1,7 @@
 package me.shaftesbury.codegenerator;
 
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
 import io.vavr.collection.Seq;
@@ -17,6 +19,7 @@ import static me.shaftesbury.codegenerator.tokeniser.Token.DOT;
 import static me.shaftesbury.codegenerator.tokeniser.Token.ENDFUNCTIONPARAMETERS;
 import static me.shaftesbury.codegenerator.tokeniser.Token.SEMICOLON;
 import static me.shaftesbury.codegenerator.tokeniser.Token.STARTFUNCTIONPARAMETERS;
+import static org.assertj.vavr.api.VavrAssertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class FunctionNameFinderTest {
@@ -28,9 +31,9 @@ class FunctionNameFinderTest {
         final IFunctionName f = FunctionName.of("f");
         final Seq<IToken> tokens = List.of(f);
 
-//        final Map<IClassName, ? extends Seq<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
-//
-//        assertThat(functionsUsedInTest).containsExactly(Tuple.of(className, List.of(f)));
+        final Map<IClassName, ? extends Seq<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
+
+        assertThat(functionsUsedInTest).containsExactly((Tuple2) Tuple.of(className, List.of(f)));
     }
 
     @Test
@@ -43,7 +46,7 @@ class FunctionNameFinderTest {
 
         final Map<IClassName, ? extends Seq<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
 
-//        assertThat(functionsUsedInTest).containsExactly(Tuple.of(className, List.of(f1, f2)));
+        assertThat(functionsUsedInTest).containsExactly((Tuple2) Tuple.of(className, List.of(f1, f2)));
     }
 
     @Test
@@ -59,7 +62,7 @@ class FunctionNameFinderTest {
 
         final Map<IClassName, ? extends Seq<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
 
-//        assertThat(functionsUsedInTest).containsExactly(Tuple.of(className1, List.of(f1)), Tuple.of(className2, List.of(f2)));
+        assertThat(functionsUsedInTest).containsExactly((Tuple2) Tuple.of(className1, List.of(f1)), (Tuple2) Tuple.of(className2, List.of(f2)));
     }
 
     @Test
@@ -73,6 +76,6 @@ class FunctionNameFinderTest {
 
         final Map<IClassName, ? extends Seq<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
 
-//        assertThat(functionsUsedInTest).containsExactly(Tuple.of(className, List.of(doTheThing)));
+        assertThat(functionsUsedInTest).containsExactly((Tuple2) Tuple.of(className, List.of(doTheThing)));
     }
 }

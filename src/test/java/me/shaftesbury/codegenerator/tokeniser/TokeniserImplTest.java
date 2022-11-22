@@ -107,7 +107,7 @@ class TokeniserImplTest {
         final java.util.List<IToken> expectedTokens = io.vavr.collection.List.of(
                         PUBLIC, CLASS, ClassName.of("ATest"), STARTCLASS,
                         TESTANNOTATION, VOIDRETURNTYPE, FunctionName.of("testFunction"),
-                        STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, STARTFUNCTION, NEW, FunctionName.of("A"),
+                        STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, STARTFUNCTION, NEW, ClassName.of("A"),
                         STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, DOT, FunctionName.of("doTheThing"),
                         STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, SEMICOLON, ENDFUNCTION, ENDCLASS)
                 .toJavaList();
