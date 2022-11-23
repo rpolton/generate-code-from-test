@@ -25,11 +25,33 @@ import static org.assertj.vavr.api.VavrAssertions.assertThat;
 class FunctionNameFinderTest {
 
     @Test
+    void onlyAClass() {
+        final FunctionNameFinder functionNameFinder = new FunctionNameFinder();
+        final IClassName className = ClassName.of("A");
+        final Seq<IToken> tokens = List.of(className);
+
+        final Map<IClassName, ? extends Seq<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
+
+        assertThat(functionsUsedInTest).isEmpty();
+    }
+
+    @Test
+    void classAndDot() {
+        final FunctionNameFinder functionNameFinder = new FunctionNameFinder();
+        final IClassName className = ClassName.of("A");
+        final Seq<IToken> tokens = List.of(className, DOT);
+
+        final Map<IClassName, ? extends Seq<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
+
+        assertThat(functionsUsedInTest).isEmpty();
+    }
+
+    @Test
     void findFunctionsUsedInTest() {
         final FunctionNameFinder functionNameFinder = new FunctionNameFinder();
         final IClassName className = ClassName.of("A");
         final IFunctionName f = FunctionName.of("f");
-        final Seq<IToken> tokens = List.of(f);
+        final Seq<IToken> tokens = List.of(className, DOT, f, STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS);
 
         final Map<IClassName, ? extends Seq<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
 
@@ -42,7 +64,7 @@ class FunctionNameFinderTest {
         final IClassName className = ClassName.of("A");
         final IFunctionName f1 = FunctionName.of("f");
         final IFunctionName f2 = FunctionName.of("g");
-        final Seq<IToken> tokens = List.of(className, f1, DOT, f2);
+        final Seq<IToken> tokens = List.of(className, DOT, f1, STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, DOT, f2, STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS);
 
         final Map<IClassName, ? extends Seq<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
 
@@ -50,19 +72,20 @@ class FunctionNameFinderTest {
     }
 
     @Test
+        // This needs to be able to infer the return type of f() in order to derive the second class name
     void findFunctionsUsedInTestWhenThereAreTwoClasses() {
         final FunctionNameFinder functionNameFinder = new FunctionNameFinder();
-        final IClassName className1 = ClassName.of("A");
-        final IClassName className2 = ClassName.of("B");
-        final IFunctionName f1 = FunctionName.of("f");
-        final IFunctionName f2 = FunctionName.of("g");
+        final IClassName c1 = ClassName.of("A");
+        final IClassName c2 = ClassName.of("B");
+        final IFunctionName f = FunctionName.of("f");
+        final IFunctionName g = FunctionName.of("g");
         final Seq<IToken> tokens = List.of(
-                className1, DOT, f1, STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, SEMICOLON,
-                className2, DOT, f2, STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, SEMICOLON);
+                c1, DOT, f, STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, SEMICOLON,
+                c2, DOT, g, STARTFUNCTIONPARAMETERS, ENDFUNCTIONPARAMETERS, SEMICOLON);
 
         final Map<IClassName, ? extends Seq<IFunctionName>> functionsUsedInTest = functionNameFinder.findFunctionsUsed(tokens);
 
-        assertThat(functionsUsedInTest).containsExactly((Tuple2) Tuple.of(className1, List.of(f1)), (Tuple2) Tuple.of(className2, List.of(f2)));
+        assertThat(functionsUsedInTest).containsExactly((Tuple2) Tuple.of(c1, List.of(f)), (Tuple2) Tuple.of(c2, List.of(g)));
     }
 
     @Test
