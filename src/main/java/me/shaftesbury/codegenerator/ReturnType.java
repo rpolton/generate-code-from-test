@@ -1,5 +1,9 @@
 package me.shaftesbury.codegenerator;
 
 public enum ReturnType {
-    VOID
+    VOID;
+
+    public String asCode() {
+        return name().toLowerCase();
+    }
 }

@@ -78,7 +78,12 @@ class CodeGeneratorIntegrationTest {
 
         final Seq<ILogicalClass> code = codeGenerator.generateCodeSatisfying(testFunction);
 
-        assertThat(code).contains(expectedClass);
+        assertThat(code)
+                .singleElement()
+                .isEqualTo(expectedClass)
+                .extracting(ILogicalClass::asCode)
+                .isEqualTo("class A { A() { } void doTheThing() { } }");
+//                .isEqualTo("public class A { public A() {} public void doTheThing() {} }");
     }
 
     @Test

@@ -53,6 +53,16 @@ public class LogicalClass implements ILogicalClass {
     }
 
     @Override
+    public String asCode() {
+        return "class " + name.asCode() + " { " +
+                constructors.foldLeft("", (acc, con) -> acc + name.asCode() + con.asCode()) +
+                " " +
+                functions.foldLeft("", (acc, fn) -> acc + fn.asCode()) +
+                " " +
+                "}";
+    }
+
+    @Override
     public boolean equals(final Object o) {
         if (this == o) return true;
 

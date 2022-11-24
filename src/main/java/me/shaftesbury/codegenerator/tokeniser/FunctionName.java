@@ -25,6 +25,11 @@ public class FunctionName implements IFunctionName {
     }
 
     @Override
+    public String asCode() {
+        return name;
+    }
+
+    @Override
     public String toString() {
         return "FunctionName{" +
                 "name='" + name + '\'' +

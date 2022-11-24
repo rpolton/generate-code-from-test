@@ -46,6 +46,11 @@ public class Constructor implements IConstructor {
         return new HashCodeBuilder(17, 37).append(functionParameters).append(body).toHashCode();
     }
 
+    @Override
+    public String asCode() {
+        return "() { }";
+    }
+
     public static class Builder {
 
         private ParameterList functionParameters = new ParameterList();

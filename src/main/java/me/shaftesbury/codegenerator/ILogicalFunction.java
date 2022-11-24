@@ -13,4 +13,6 @@ public interface ILogicalFunction {
     ReturnType getReturnType();
 
     List<IToken> getBody();
+
+    String asCode();
 }

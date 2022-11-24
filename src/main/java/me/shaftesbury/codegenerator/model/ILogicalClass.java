@@ -14,4 +14,6 @@ public interface ILogicalClass {
     Traversable<IConstructor> getConstructors();
 
     Fields getFields();
+
+    String asCode();
 }

@@ -48,6 +48,11 @@ public class LogicalFunction implements ILogicalFunction {
     }
 
     @Override
+    public String asCode() {
+        return returnType.asCode() + " " + name.asCode() + "() { }";
+    }
+
+    @Override
     public int hashCode() {
         return new HashCodeBuilder(21, 3)
                 .append(getName())

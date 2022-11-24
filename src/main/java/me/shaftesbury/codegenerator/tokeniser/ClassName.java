@@ -47,4 +47,9 @@ public class ClassName implements IClassName {
     public int hashCode() {
         return new HashCodeBuilder(17, 37).append(name).toHashCode();
     }
+
+    @Override
+    public String asCode() {
+        return name;
+    }
 }

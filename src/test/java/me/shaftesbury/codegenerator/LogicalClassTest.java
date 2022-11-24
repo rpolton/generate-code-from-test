@@ -1,8 +1,12 @@
 package me.shaftesbury.codegenerator;
 
 import io.vavr.collection.HashSet;
+import io.vavr.collection.List;
 import me.shaftesbury.codegenerator.model.IConstructor;
 import me.shaftesbury.codegenerator.model.ILogicalClass;
+import me.shaftesbury.codegenerator.tokeniser.ClassName;
+import me.shaftesbury.codegenerator.tokeniser.FunctionName;
+import me.shaftesbury.codegenerator.tokeniser.Token;
 import org.junit.jupiter.api.Test;
 
 import static me.shaftesbury.codegenerator.model.Constructor.DEFAULT_CONSTRUCTOR;
@@ -62,4 +66,16 @@ class LogicalClassTest {
 //        final ILogicalClass iLogicalClass = LogicalClass.builder().withName(className).build();
 //        assertThat(iLogicalClass).extracting(ILogicalClass::getName).isEqualTo(className);
 //    }
+
+    @Test
+    void stringify() {
+        final ILogicalClass expectedClass = LogicalClass.builder().withName(ClassName.of("A"))
+                .withDefaultConstructor()
+                .withMethod(LogicalFunction.builder().withName(FunctionName.of("doTheThing")).havingNoParameters().returning(ReturnType.VOID).withBody(List.of(Token.EMPTY)).build())
+                .build();
+        assertThat(expectedClass.asCode()).isEqualTo("class A { " +
+                "A() { } " +
+                "void doTheThing() { } " +
+                "}");
+    }
 }
